@@ -12,7 +12,7 @@
     },
     "console": {
         "@expanded": true,
-        "@height": "153",
+        "@height": 157,
         "@maximized": "false",
         "json()": {
             "meta": {
@@ -41,7 +41,7 @@
                             "id": "devel_411",
                             "cwd": "",
                             "width": 1549,
-                            "height": 127
+                            "height": 131
                         }
                     },
                     "editorType": "terminal",
@@ -83,15 +83,17 @@
         "counters": {
             "@ace": 1,
             "@acestatus": 1,
+            "@datagrid": 1,
             "@divider": 4,
-            "@document": 8,
+            "@document": 9,
             "@form": 5,
             "@menu": 5,
             "@menuitem": 13,
             "@pane": 2,
-            "@session": 7,
-            "@tab": 11,
-            "@undoManager": 8
+            "@preferences": 1,
+            "@session": 8,
+            "@tab": 4,
+            "@undoManager": 9
         }
     },
     "findinfiles": {
@@ -146,7 +148,8 @@
             "json()": [
                 "/",
                 "/stylesheets",
-                "/javascripts"
+                "/javascripts",
+                "/images/saml-passport"
             ]
         }
     },
@@ -156,6 +159,11 @@
     "search-history": {
         "search": {
             "json()": [
+                "according",
+                "inner",
+                "font",
+                "title",
+                "highlight\r\n\r\n\r\n",
                 "margin",
                 "code\r\n",
                 "code",
@@ -170,6 +178,7 @@
             "meta": {
                 "accessList": [
                     "tab2",
+                    "tab3",
                     "tab6",
                     "tab4",
                     "tab5",
@@ -190,7 +199,7 @@
                     "document": {
                         "changed": false,
                         "meta": {
-                            "timestamp": 1463212586248
+                            "timestamp": 1463220001826
                         },
                         "filter": true,
                         "title": "index.html",
@@ -208,14 +217,40 @@
                         "tab6"
                     ],
                     "document": {
-                        "changed": false,
-                        "meta": {
-                            "timestamp": 1463212682650
-                        },
                         "filter": true,
                         "title": "stylesheet.css",
                         "tooltip": "/stylesheets/stylesheet.css",
-                        "ace": {}
+                        "ace": {
+                            "folds": [],
+                            "scrolltop": 1714.5,
+                            "scrollleft": 0,
+                            "selection": {
+                                "start": {
+                                    "row": 128,
+                                    "column": 21
+                                },
+                                "end": {
+                                    "row": 128,
+                                    "column": 23
+                                },
+                                "isBackwards": false
+                            },
+                            "options": {
+                                "guessTabSize": true,
+                                "useWrapMode": false,
+                                "wrapToView": true
+                            },
+                            "firstLineState": {
+                                "row": 6,
+                                "state": "start",
+                                "mode": "ace/mode/css"
+                            }
+                        },
+                        "hash": "71c0dc5176725eb02fd525d74371de16a9e06c91",
+                        "meta": {
+                            "timestamp": 1463218776427
+                        },
+                        "changed": false
                     },
                     "editorType": "ace",
                     "active": false
@@ -237,12 +272,12 @@
                             "scrollleft": 0,
                             "selection": {
                                 "start": {
-                                    "row": 3,
-                                    "column": 31
+                                    "row": 17,
+                                    "column": 57
                                 },
                                 "end": {
-                                    "row": 3,
-                                    "column": 31
+                                    "row": 17,
+                                    "column": 57
                                 },
                                 "isBackwards": false
                             },
@@ -252,8 +287,7 @@
                                 "wrapToView": true
                             },
                             "firstLineState": {
-                                "row": 122,
-                                "state": "start",
+                                "row": 369,
                                 "mode": "ace/mode/css"
                             }
                         },
@@ -399,6 +433,28 @@
                         "changed": false
                     },
                     "editorType": "ace",
+                    "active": false
+                },
+                {
+                    "type": "tab",
+                    "name": "tab3",
+                    "path": "",
+                    "className": [
+                        "tab3"
+                    ],
+                    "document": {
+                        "changed": false,
+                        "meta": {
+                            "timestamp": 1463231572358
+                        },
+                        "filter": true,
+                        "title": "Preferences",
+                        "preferences": {
+                            "activePanel": "preferences.general",
+                            "section": "Mocha Test Runner"
+                        }
+                    },
+                    "editorType": "preferences",
                     "active": false
                 }
             ],

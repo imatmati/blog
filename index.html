@@ -11,14 +11,10 @@
   <link rel="stylesheet" href="stylesheets/github-dark.css">
   <link rel="stylesheet" href="stylesheets/enhance/classes.css">
   <link rel="stylesheet" href="stylesheets/enhance/zoom.css">
-  <link rel="stylesheet" href="stylesheets/shCore.css">
-  <link rel="stylesheet" href="stylesheets/shThemeRDark.css">
-  <script type="text/javascript" src="javascripts/script.js"></script>
+   <script type="text/javascript" src="javascripts/script.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="http://cdn.jsdelivr.net/velocity/1.2.2/velocity.min.js"></script>
   <script type="text/javascript" src="javascripts/enhance.js"></script>
-  <script type="text/javascript" src="javascripts/shCore.js"></script>
-  <script type="text/javascript" src="javascripts/shBrushXml.js"></script>
   <title>Blog</title>
   <meta name="description" content="">
 
@@ -46,30 +42,16 @@
         </div>
         <article class="markdown-body">
 
-          <h3>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<a id="saml-passport" class="anchor" href="#saml-passport" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS</h3>
+          <h1>
+            <a id="saml-passport" class="anchor" href="#saml-passport" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS
+          </h1>
 
           <p>
             Authentication with standard protocols is often a daunting task for most people. SAML, OAuth2, etc. seem cumbersome and too difficult to integrate in an application. What's more, their roles and limits are fuzzy to a lot of developpers. Let's try to demystify
             this natural functionnality in any web application. In this tutorial, we'll use SAML2 with WSO2 Identity Server connected to a LDAP server as a users store. The application will be implemented with Express / Passport.
           </p>
           <p>
-            <h4>Prerequisites</h4>
+            <h3>Prerequisites</h3>
             <ul>
               <li><a href="http://apache.mirrors.ovh.net/ftp.apache.org/dist/directory/studio/2.0.0.v20151221-M10/ApacheDirectoryStudio-2.0.0.v20151221-M10-win32.win32.x86_64.zip">Apache studio directory</a></li>
               <li><a href="https://nodejs.org/dist/v4.4.3/node-v4.4.3-x64.msi">Node</a> </li>
@@ -78,15 +60,16 @@
             </ul>
           </p>
           <p>
+            Click on the links to get the components of our tutorial in the right version used.
             So, Apache Directory Studio will be our LDAP server, but of course you should be able to use any other LDAP Server in your own environment. WSO2 is well documented and easy to manage, it will take the role of our Identity Server. And C9 is my little sweet
             IDE for any Javascript development, I recommend it but you can use any other one convenient to you. Do I need to present Node ?
           </p>
           <section>
             <p>
-              <h4>Configuration</h4> After installation of all requirements, let's begin to configure our environment.
-              <h5>LDAP Server creation</h5> Launch Apache Studio and then create a LDAP Server. In the "LDAP Servers" tab, click on "New Server" button.
+              
+              <h2>LDAP Server creation</h2> After installation of all requirements, let's begin to configure our environment.Launch Apache Studio and then create a LDAP Server. In the "LDAP Servers" tab, click on "New Server" button. Click on any image to zoom in.
               <div class="interlign"></div>
-              <img src="images/saml-passport/ldap-creation.png" />
+              <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-creation.png" />
             </p>
             <p>
               Then, check the ports of your newly created LDAP Server by double clicking the new server.
@@ -110,7 +93,7 @@
             </p>
             <section>
               <p>
-                <h5>User & Group creation</h5> Users and roles can be created directly in WSO2, but for demonstration sake let's create them in the LDAP. If you want to automatize users and roles creation or import, you'll need this section. First, create a user in the LDAP under
+                <h3>User & Group creation</h3> Users and roles can be created directly in WSO2, but for demonstration sake let's create them in the LDAP. If you want to automatize users and roles creation or import, you'll need this section. First, create a user in the LDAP under
                 ou=users,ou=system.
                 <div class="interlign"></div>
                 <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-1.png" /> Follow the assistant as described
@@ -156,52 +139,48 @@
               </p>
               <section>
                 <section>
-                  <h5>WSO2 configuration</h5>
+                  <h2>WSO2 configuration</h2>
+                  
                   <p>WSO2 runs an embedded LDAP Server we must disable and replace by our own one.To that purpose, under %WSO2_HOME/repository/conf/identity/embedded-ldap.xml, turn it off</p>
-                  <div class="excerpt"><pre class="brush: xml">
-                    <EmbeddedLDAP>
-                      <Property name="enable">false</Property>
-                      ...
-                    </EmbeddedLDAP>
-                  </pre></div>
+                  <div class="excerpt"><pre style="background:#000;color:#f8f8f8"><span style="color:#89bdff">&lt;<span style="color:#89bdff">EmbeddedLDAP</span>></span>
+  <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"enable"</span>></span>false<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+  ...
+<span style="color:#89bdff">&lt;/<span style="color:#89bdff">EmbeddedLDAP</span>></span>
+</pre></div>
 
-                  <p>Now, let's indicates how to connect to our LDAP Server, change the following section from  %WSO2_HOME/repository/conf/user-mgt.xml according your environment.</p>
-                  <div class="excerpt"><pre class="brush: xml">
-                     <UserStoreManager class="org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager">
-                      <Property name="TenantManager">org.wso2.carbon.user.core.tenant.CommonHybridLDAPTenantManager</Property>
-                      <Property name="ConnectionURL">ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}</Property>
-                      <Property name="ConnectionPassword">admin</Property>
-                      <Property name="UserSearchBase">ou=Users,dc=wso2,dc=org</Property>
-                      <Property name="UserEntryObjectClass">identityPerson</Property>
-                      <Property name="UserNameAttribute">uid</Property>
-                      <Property name="UserNameSearchFilter">(&amp;(objectClass=person)(uid=?))</Property>
-                      <Property name="UserNameListFilter">(objectClass=person)</Property>
-                  			.....
-                			<Property name="GroupSearchBase">ou=Groups,dc=wso2,dc=org</Property>
-                  			.....
-                			<Property name="SCIMEnabled">true</Property>
-                    		.....
-                			<Property name="defaultRealmName">WSO2.ORG</Property>
-                  			...
-                    </UserStoreManager>
-                  </pre></div>
+                  <p>Now, let's indicates how to connect to our LDAP Server, change the following section from  %WSO2_HOME/repository/conf/user-mgt.xml according to your environment.</p>
+                  <div class="excerpt"><pre style="background:#000;color:#f8f8f8"> <span style="color:#89bdff">&lt;<span style="color:#89bdff">UserStoreManager</span> <span style="color:#89bdff">class</span>=<span style="color:#65b042">"org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager"</span>></span>
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"ConnectionURL"</span>></span>ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"ConnectionPassword"</span>></span>admin<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"UserSearchBase"</span>></span>ou=Users,dc=wso2,dc=org<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"UserEntryObjectClass"</span>></span>identityPerson<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+                            .....
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"GroupSearchBase"</span>></span>ou=Groups,dc=wso2,dc=org<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+                            .....
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"SCIMEnabled"</span>></span>true<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+                            .....
+      <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"defaultRealmName"</span>></span>WSO2.ORG<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+                            ...
+<span style="color:#89bdff">&lt;/<span style="color:#89bdff">UserStoreManager</span>></span>
+</pre></div>
                   <p>In our case, we'll change them to </p>
-                  <div class="excerpt"><pre class="brush: xml">
-                    <Property name="ConnectionURL">ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}</Property>
-                    <Property name="ConnectionPassword">secret</Property>
-                    <Property name="UserSearchBase">ou=users,ou=system</Property>
-                    <Property name="UserEntryObjectClass">inetOrgPerson</Property>
-              			...
-              			<Property name="GroupSearchBase">ou=groups,ou=system</Property>
-              			...
-              			<Property name="SCIMEnabled">false</Property>
-              			...
-              			<Property name="defaultRealmName">mycompany.org</Property>
-                  </pre></div>
+                  <div class="excerpt">
+                   <pre style="background:#000;color:#f8f8f8">    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"ConnectionURL"</span>></span>ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"ConnectionPassword"</span>></span>secret<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"UserSearchBase"</span>></span>ou=users,ou=system<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"UserEntryObjectClass"</span>></span>inetOrgPerson<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+    ...
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"GroupSearchBase"</span>></span>ou=groups,ou=system<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+     ...
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"SCIMEnabled"</span>></span>false<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+    ...
+    <span style="color:#89bdff">&lt;<span style="color:#89bdff">Property</span> <span style="color:#89bdff">name</span>=<span style="color:#65b042">"defaultRealmName"</span>></span>mycompany.org<span style="color:#89bdff">&lt;/<span style="color:#89bdff">Property</span>></span>
+</pre>
+                  </div>
                   <p>This section needs some explanations.<br/>
                     <ul>
                       <li>
-                    I didn't change the port configuration as the expression in ConnectionURL property resolves to 10389 (have a look at %WSO2_HOME/repository/conf/carbon.xml to Server/Ports/EmbeddedLDAP/LDAPServerPort element to get the value).
+                    I didn't change the port configuration as the expression in ConnectionURL property resolves to 10389 (have a look at %WSO2_HOME/repository/conf/carbon.xml then Server/Ports/EmbeddedLDAP/LDAPServerPort element to get the value).
                     You remember we checked the port value of our LDAP Server and it was indeed 10389. So no need to change it. Of course, in our example we'll address a local server but in your production environment you'll have to name it instead of localhost.
                       </li><li>
                     The default password of the admin user of ApacheDirectoryStudio is secret so change it in ConnectionPassword property.
@@ -214,12 +193,151 @@
                      </li><li>
                     Turn SCIM off, we don't need it here.
                      </li><li>
-                    Of course name your realm according your topology, here I chose mycompany.org as defaultRealmName.
+                    Of course name your realm according to your topology, here I chose mycompany.org as defaultRealmName.
                      </li>
                     </ul>
                   </p>
-                  <p>Launch the WSO2 IS server by %WSO2_HOME/bin/wso2server.bat start. Don't forget to set JAVA_HOME before that.</p>
+                  <h3>User & Role</h3>
+                  <p>Launch the WSO2 IS server by %WSO2_HOME/bin/wso2server.bat start. Don't forget to set JAVA_HOME before that.<br/>
+                  Do you remember our 'me' user and its 'basic' group ? Let's find them in our WSO2 server.First, under 'Users and Roles'/List/Users in the console you'll find our user.<div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-console-resultat.png"/><div class="interlign"></div>
+                  And our group ? It's changed to a role in WSO2. Find it under 'Users and Roles'/List/Roles<div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-console-resultat2.png"/><div class="interlign"></div>
+                  Of course, you can verify the user role membership by clicking on 'View Users' in the Roles panel or 'View Roles' in the Users panel.<div class="interlign"></div>
+                  </p>
+                  <h3>Service Provider & SAML2</h3>
+                  <p>
+                    Then, create a service provider by clicking on 'Service Providers'/Add. Name it according to your desire and register it. Here, I named it ExpressAppServiceProvider.
+                  </p>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/sso-service-provider-1.png"/><div class="interlign"></div>
+                  <p>An important part of our configuration is to determine what attributes will be sent in response of a successful authentication. These attributes can be very different depending on the user store.
+                    To solve part of this problem, attributes are not declared directly but referenced by general and 'standard' names. These names are presented as claims. Claims are nothing more than standardized URI names to identify an attribute.
+                    However, there is no uniq way to use claims so a collection of possibilities is offered to your choice.
+                    In our tutorial, we choose to send back the email address of our authenticated user. So in the next screen after registration of our Service Provider do it this way.<div class="interlign"></div>
+                    <img data-action="zoom" class="cropped" src="images/saml-passport/sso-service-provider-2.png"/><div class="interlign"></div>
+                  </p>
+                  <p>
+                    We want to use SAML2. We'll configure it by clicking 'configure' under 'Inbound Authentication Configuration'/'SAML2 Web SSO Configuration'<div class="interlign"></div>
+                    <img data-action="zoom" class="cropped" src="images/saml-passport/sso-service-provider-3.png"/><div class="interlign"></div>
+                  </p>
+                  <p>Configure our authentication as follows</p><div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/sso-service-provider-4.png"/><div class="interlign"></div><div class="interlign"></div>
+                  Here we identify our application with an issuer id (issuer of authentication requests of course). Then we must indicate the URL the SAML response will be returned to. Insert the URL in 'Assertion Consumer URLs' then click add and choose it in the 'Default Assertion Consumer URL'.
+                  Note these two important informations as we'll need them shortly in our application.
                 </section>
+                <h2>Application Express / Passport</h2>
+                <p>Passport is a javascript library managing different kind of protocols for authentication and authorization. We'll use it in a simple Express Application for demonstration purpose.</p>
+                You'll have to install its SAML plugin as well.First create your application by installing dependencies. Here you get the package.json I used for the tutorial.
+                <pre style="background:#000;color:#f8f8f8">{
+  <span style="color:#65b042">"name"</span>: <span style="color:#65b042">"express-saml"</span>,
+  <span style="color:#65b042">"version"</span>: <span style="color:#65b042">"1.0.0"</span>,
+  <span style="color:#65b042">"description"</span>: <span style="color:#65b042">""</span>,
+  <span style="color:#65b042">"main"</span>: <span style="color:#65b042">"server.js"</span>,
+  <span style="color:#65b042">"scripts"</span>: {
+    <span style="color:#65b042">"test"</span>: <span style="color:#65b042">"echo <span style="color:#ddf2a4">\"</span>Error: no test specified<span style="color:#ddf2a4">\"</span> &amp;&amp; exit 1"</span>
+  },
+  <span style="color:#65b042">"keywords"</span>: [
+    <span style="color:#65b042">"express"</span>,
+    <span style="color:#65b042">"saml"</span>
+  ],
+  <span style="color:#65b042">"author"</span>: <span style="color:#65b042">"ivan matmati"</span>,
+  <span style="color:#65b042">"license"</span>: <span style="color:#65b042">"ISC"</span>,
+  <span style="color:#65b042">"dependencies"</span>: {
+    <span style="color:#65b042">"body-parser"</span>: <span style="color:#65b042">"^1.15.1"</span>,
+    <span style="color:#65b042">"express"</span>: <span style="color:#65b042">"^4.13.4"</span>,
+    <span style="color:#65b042">"express-session"</span>: <span style="color:#65b042">"^1.13.0"</span>,
+    <span style="color:#65b042">"passport"</span>: <span style="color:#65b042">"^0.3.2"</span>,
+    <span style="color:#65b042">"passport-saml"</span>: <span style="color:#65b042">"^0.15.0"</span>
+  }
+}
+</pre>
+              As you can notice, a specific plugin has been added to Passport to take care of SAML messages. The plugin used is passport-saml.
+              Then follows the code example to get authentication from WSO2 through SAML2 protocol.
+                <p>
+                <pre style="background:#000;color:#f8f8f8"><span style="color:#99cf50">var</span> express <span style="color:#e28964">=</span> require(<span style="color:#65b042">"express"</span>);
+<span style="color:#99cf50">var</span> passport <span style="color:#e28964">=</span> require(<span style="color:#65b042">"passport"</span>);
+<span style="color:#99cf50">var</span> SamlStrategy <span style="color:#e28964">=</span> require(<span style="color:#65b042">'passport-saml'</span>).Strategy;
+<span style="color:#99cf50">var</span> bodyParser <span style="color:#e28964">=</span> require(<span style="color:#65b042">"body-parser"</span>);
+<span style="color:#99cf50">var</span> session <span style="color:#e28964">=</span> require(<span style="color:#65b042">"express-session"</span>);
+<span style="color:#99cf50">var</span> app <span style="color:#e28964">=</span> express();
+app.use(bodyParser.urlencoded({
+  extended: <span style="color:#3387cc">true</span>
+}));
+app.use(session({ secret: <span style="color:#65b042">'this shit hits'</span>}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+<span style="color:#99cf50">var</span> <span style="color:#89bdff">redirectLogin</span> <span style="color:#e28964">=</span> <span style="color:#99cf50">function</span> (req,res,next) {
+   <span style="color:#e28964">if</span> (<span style="color:#e28964">!</span>req.isAuthenticated()) {
+      res.redirect(<span style="color:#65b042">"/myapp/login"</span>);
+   }
+   next();
+}
+passport.serializeUser(<span style="color:#99cf50">function</span>(user, done) {
+    done(<span style="color:#3387cc">null</span>, user);
+});
+
+passport.deserializeUser(<span style="color:#99cf50">function</span>(user, done) {
+ 
+  done(<span style="color:#3387cc">null</span>, user);
+});
+
+passport.use(<span style="color:#e28964">new</span> <span style="text-decoration:underline">SamlStrategy</span>({
+    entryPoint: <span style="color:#65b042">'https://localhost:9443/samlsso'</span>,
+    issuer: <span style="color:#65b042">'MyAppExpress'</span>
+  },
+  <span style="color:#99cf50">function</span>(profile, done) {
+    <span style="color:#99cf50">var</span> myUser <span style="color:#e28964">=</span> {
+      email : profile.nameID
+    }
+    done(<span style="color:#3387cc">null</span>, myUser);
+  }));
+
+
+app.get(<span style="color:#65b042">'/myapp/login'</span>,
+  passport.authenticate(<span style="color:#65b042">'saml'</span>, {
+    successRedirect: <span style="color:#65b042">"/myapp"</span>,
+    failureRedirect: <span style="color:#65b042">"/myapp/login"</span>,
+  }));
+
+
+app.post(<span style="color:#65b042">'/myapp/saml'</span>, passport.authenticate(<span style="color:#65b042">'saml'</span>, {
+       failureRedirect: <span style="color:#65b042">"/myapp/login"</span>,
+      failureFlash: <span style="color:#3387cc">true</span>
+    })
+  ,
+  <span style="color:#99cf50">function</span>(req, res) {
+    res.redirect(<span style="color:#65b042">"/myapp"</span>);
+  }
+);
+
+
+app.get(<span style="color:#65b042">"/myapp"</span>,redirectLogin, <span style="color:#99cf50">function</span>(req, res) {
+  
+    res.<span style="color:#dad085">send</span>(<span style="color:#65b042">"you're authenticated !!!! "</span><span style="color:#e28964">+</span> JSON.stringify(req.user));
+});
+
+
+app.listen(process.env.PORT <span style="color:#e28964">||</span> <span style="color:#3387cc">8080</span>);
+</pre>
+                The logic is quiet simple. 
+                <p>First, we need to create a session in express so that authenticated users can be recognized in subsequent calls. To that end, we use express-session.
+                After the classic initialization of Passport by a call to initialize, we inject the returned middleware into our Express application. And then we finish the session management by "inserting" the session manager of Passport by a call to its session() method.
+                All of This is clearly explained in the  github pages of <a href="https://github.com/jaredhanson/passport">Passport</a>.</p>
+                <p>Just before these initialization lines, you certainly noticed the use of an other middleware, bodyParser. Why ? it'll become clear afterwards when we'll reach the SAML response management.</p>
+                <p>redirectLogin is a middleware we create to check if the user is authenticated when he tries to reach some resources. Its role is to redirect to the login page if not.</p>
+                <p>serializeUser and deserializeUser are the means used by Passport to manipulate user information in the session. Here we simply decide to keep the profile returned itself.</p>
+                <p>The registration of our Passport Strategyy is classic. Let's explain the configuration object.The 'entryPoint' is the URL of the identity provider, here our WSO2 IS SAML URL endpoint.
+                Then the 'issuer' identifies us and allows mapping with the configuration of Service Provider we inserted previously in WSO2 IS. The callback provided serves to create a custom user object from the profile returned.
+                After done method is executed, the user object is injected into the Express request object and is obtainable by request.user.
+                </p>
+                <p>To redirect the login to WSO2 server, we insert the middleware of Passport as the uniq one of the /myapp/login URL mapping. The configuration is straightforward.</p>
+                <p>Here comes the second element we configure in our Service Provider section. The URL of our application that should be called with the assertion information about our user. These informations are posted so we use a POST configuration for this URL.
+                And here comes into play the bodyParser. Its role is to read information from the body of this POST and make it available.
+                Finally by the middleware added, we redirect to the main page of our application after success.</p>
+                <p>The main page of our application simply writes information about our user by getting the user object from request object.</p>
+                <p>How to get more information from our user ? Simply by adding claims in the WSO2 console and get these informations from the profile returned to inject it into our user object.</p>
                 <section>
                   <!--             
           <h3>
