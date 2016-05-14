@@ -11,10 +11,14 @@
   <link rel="stylesheet" href="stylesheets/github-dark.css">
   <link rel="stylesheet" href="stylesheets/enhance/classes.css">
   <link rel="stylesheet" href="stylesheets/enhance/zoom.css">
+  <link rel="stylesheet" href="stylesheets/shCore.css">
+  <link rel="stylesheet" href="stylesheets/shThemeRDark.css">
   <script type="text/javascript" src="javascripts/script.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="http://cdn.jsdelivr.net/velocity/1.2.2/velocity.min.js"></script>
   <script type="text/javascript" src="javascripts/enhance.js"></script>
+  <script type="text/javascript" src="javascripts/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/shBrushXml.js"></script>
   <title>Blog</title>
   <meta name="description" content="">
 
@@ -50,6 +54,14 @@
 
 
 
+
+
+
+
+
+
+
+
 <a id="saml-passport" class="anchor" href="#saml-passport" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS</h3>
 
           <p>
@@ -66,71 +78,154 @@
             </ul>
           </p>
           <p>
-            So, Apache Directory Studio will be our LDAP server, but of course you should be able to use any other LDAP Server in your own environment.
-            WSO2 is well documented and easy to manage, it will take the role of our Identity Server.  And C9 is my little sweet IDE for any Javascript development, I recommend it but you can use any other one convenient to you.
-            Do I need to present Node ?
+            So, Apache Directory Studio will be our LDAP server, but of course you should be able to use any other LDAP Server in your own environment. WSO2 is well documented and easy to manage, it will take the role of our Identity Server. And C9 is my little sweet
+            IDE for any Javascript development, I recommend it but you can use any other one convenient to you. Do I need to present Node ?
           </p>
-          <p>
-            <h4>Configuration</h4>
-            After installation of all requirements, let's begin to configure our environment.
-            <h5>LDAP Server creation</h5>
-            Launch Apache Studio and then create a LDAP Server. In the "LDAP Servers" tab, click on "New Server" button.<div class="interlign"></div>
-            <img src="images/saml-passport/ldap-creation.png"/>
-          </p>
-          <p>
-            Then, check the ports of your newly created LDAP Server by double clicking the new server.<div class="interlign"></div>
-            <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-ports.png"/>
-          </p>
-          <p>
-            Now, proceed to create a connection to your LDAP Server as shown below<div class="interlign"></div>
-             <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection.png"/> 
-          </p>
-          <p>
-            You should get a confirmation message<div class="interlign"></div>
-            <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection-created.png"/> 
-          </p>
-          <p>
-            Open it by double-clicking it in the "connection" tab or by contextual menu <div class="interlign"></div>
-            <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection-open.png"/> 
-          </p>
-          <p><h5>User creation</h5>
-          Users and roles can be created directly in WSO2, but for demonstration sake let's create them in the LDAP. If you want to automatize users and roles creation or import, you'll need this section.
-          First, create a user in the LDAP under ou=users,ou=system.<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-1.png"/> 
-           Follow the assistant as described<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-2.png"/> 
-           <p>Give it a inetOrgPerson class, automatically a few others classes will be added <div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-3.png"/> 
-           </p>
-            <p>Then choose a name as its uid. Here, very cleverly I choose "me" as the best name describing ... me. <div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-4.png"/> 
-           </p>
-            <p>A sn and cn are needed to confom to the LDAP Schema. Add them in the assistant before trying to create it <div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-5.png"/> 
-           </p>
-            <p>No authentication without password, add it as a new attribute by these two steps by right-click then "New Attribute"<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-6.png"/> 
-           </p>
-             <p>Then<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-7.png"/> 
-           </p>
+          <section>
+            <p>
+              <h4>Configuration</h4> After installation of all requirements, let's begin to configure our environment.
+              <h5>LDAP Server creation</h5> Launch Apache Studio and then create a LDAP Server. In the "LDAP Servers" tab, click on "New Server" button.
+              <div class="interlign"></div>
+              <img src="images/saml-passport/ldap-creation.png" />
             </p>
-             <p>Choose a good and secured password. And more securely, choose a salted algo like SSHA<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-8.png"/> 
-           </p>
-          </p>
-             <p>Now, create a group for our user as follows. First, create a new entry under ou=groups,ou=system with "groupOfNames" class. Let's call it "basic"<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-1.png"/> 
-            <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-2.png"/> 
-           </p>
-           </p>
-             <p>Then add it "me" user as a member after clicking next<div class="interlign"></div>
-           <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-3.png"/> 
-           </p>
+            <p>
+              Then, check the ports of your newly created LDAP Server by double clicking the new server.
+              <div class="interlign"></div>
+              <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-ports.png" />
+            </p>
+            <p>
+              Now, proceed to create a connection to your LDAP Server as shown below
+              <div class="interlign"></div>
+              <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection.png" />
+            </p>
+            <p>
+              You should get a confirmation message
+              <div class="interlign"></div>
+              <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection-created.png" />
+            </p>
+            <p>
+              Open it by double-clicking it in the "connection" tab or by contextual menu
+              <div class="interlign"></div>
+              <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-connection-open.png" />
+            </p>
+            <section>
+              <p>
+                <h5>User & Group creation</h5> Users and roles can be created directly in WSO2, but for demonstration sake let's create them in the LDAP. If you want to automatize users and roles creation or import, you'll need this section. First, create a user in the LDAP under
+                ou=users,ou=system.
+                <div class="interlign"></div>
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-1.png" /> Follow the assistant as described
+                <div class="interlign"></div>
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-2.png" />
+                <p>Give it a inetOrgPerson class, automatically a few others classes will be added
+                  <div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-3.png" />
+                </p>
+                <p>Then choose a name as its uid. Here, very cleverly I choose "me" as the best name describing ... me.
+                  <div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-4.png" />
+                </p>
+                <p>A sn and cn are needed to confom to the LDAP Schema. Add them in the assistant before trying to create it
+                  <div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-5.png" />
+                </p>
+                <p>No authentication without password, add it as a new attribute by these two steps by right-click then "New Attribute"
+                  <div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-6.png" />
+                </p>
+                <p>Then
+                  <div class="interlign"></div>
+                  <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-7.png" />
+                </p>
+              </p>
+              <p>Choose a good and secured password. And more securely, choose a salted algo like SSHA
+                <div class="interlign"></div>
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-user-creation-8.png" />
+              </p>
+              </p>
+            </section>
+            <section>
+              <p>Now, create a group for our user as follows. First, create a new entry under ou=groups,ou=system with "groupOfNames" class. Let's call it "basic"
+                <div class="interlign"></div>
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-1.png" />
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-2.png" />
+              </p>
+              </p>
+              <p>Then add "me" user as a member after clicking next
+                <div class="interlign"></div>
+                <img data-action="zoom" class="cropped" src="images/saml-passport/ldap-group-creation-3.png" />
+              </p>
+              <section>
+                <section>
+                  <h5>WSO2 configuration</h5>
+                  <p>WSO2 runs an embedded LDAP Server we must disable and replace by our own one.To that purpose, under %WSO2_HOME/repository/conf/identity/embedded-ldap.xml, turn it off</p>
+                  <div class="excerpt"><pre class="brush: xml">
+                    <EmbeddedLDAP>
+                      <Property name="enable">false</Property>
+                      ...
+                    </EmbeddedLDAP>
+                  </pre></div>
+
+                  <p>Now, let's indicates how to connect to our LDAP Server, change the following section from  %WSO2_HOME/repository/conf/user-mgt.xml according your environment.</p>
+                  <div class="excerpt"><pre class="brush: xml">
+                     <UserStoreManager class="org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager">
+                      <Property name="TenantManager">org.wso2.carbon.user.core.tenant.CommonHybridLDAPTenantManager</Property>
+                      <Property name="ConnectionURL">ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}</Property>
+                      <Property name="ConnectionPassword">admin</Property>
+                      <Property name="UserSearchBase">ou=Users,dc=wso2,dc=org</Property>
+                      <Property name="UserEntryObjectClass">identityPerson</Property>
+                      <Property name="UserNameAttribute">uid</Property>
+                      <Property name="UserNameSearchFilter">(&amp;(objectClass=person)(uid=?))</Property>
+                      <Property name="UserNameListFilter">(objectClass=person)</Property>
+                  			.....
+                			<Property name="GroupSearchBase">ou=Groups,dc=wso2,dc=org</Property>
+                  			.....
+                			<Property name="SCIMEnabled">true</Property>
+                    		.....
+                			<Property name="defaultRealmName">WSO2.ORG</Property>
+                  			...
+                    </UserStoreManager>
+                  </pre></div>
+                  <p>In our case, we'll change them to </p>
+                  <div class="excerpt"><pre class="brush: xml">
+                    <Property name="ConnectionURL">ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}</Property>
+                    <Property name="ConnectionPassword">secret</Property>
+                    <Property name="UserSearchBase">ou=users,ou=system</Property>
+                    <Property name="UserEntryObjectClass">inetOrgPerson</Property>
+              			...
+              			<Property name="GroupSearchBase">ou=groups,ou=system</Property>
+              			...
+              			<Property name="SCIMEnabled">false</Property>
+              			...
+              			<Property name="defaultRealmName">mycompany.org</Property>
+                  </pre></div>
+                  <p>This section needs some explanations.<br/>
+                    <ul>
+                      <li>
+                    I didn't change the port configuration as the expression in ConnectionURL property resolves to 10389 (have a look at %WSO2_HOME/repository/conf/carbon.xml to Server/Ports/EmbeddedLDAP/LDAPServerPort element to get the value).
+                    You remember we checked the port value of our LDAP Server and it was indeed 10389. So no need to change it. Of course, in our example we'll address a local server but in your production environment you'll have to name it instead of localhost.
+                      </li><li>
+                    The default password of the admin user of ApacheDirectoryStudio is secret so change it in ConnectionPassword property.
+                     </li><li>
+                    The base of our user entries is ou=users,ou=system in our LDAP Server so be the value of UserSearchBase property.
+                     </li><li>
+                    Our class of users was inetOrgPerson not identityPerson.Accord UserEntryObjectClass to this value.
+                     </li><li>
+                    The group entries base is located elsewhere than the default configuration. Switch GroupSearchBase to ou=groups,ou=system for the same reason as the users entries.
+                     </li><li>
+                    Turn SCIM off, we don't need it here.
+                     </li><li>
+                    Of course name your realm according your topology, here I chose mycompany.org as defaultRealmName.
+                     </li>
+                    </ul>
+                  </p>
+                  <p>Launch the WSO2 IS server by %WSO2_HOME/bin/wso2server.bat start. Don't forget to set JAVA_HOME before that.</p>
+                </section>
+                <section>
+                  <!--             
           <h3>
           
 
-<!--
+
 <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
 
           <p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here <a href="https://guides.github.com/features/mastering-markdown/">using GitHub Flavored Markdown</a>, select a

@@ -54,11 +54,9 @@
                     "className": [],
                     "document": {
                         "title": "Immediate",
-                        "changed": false,
-                        "meta": {
-                            "timestamp": 1463040337259
-                        },
-                        "filter": true
+                        "meta": {},
+                        "filter": true,
+                        "changed": false
                     },
                     "editorType": "immediate",
                     "active": false
@@ -86,14 +84,14 @@
             "@ace": 1,
             "@acestatus": 1,
             "@divider": 4,
-            "@document": 7,
+            "@document": 8,
             "@form": 5,
             "@menu": 5,
             "@menuitem": 13,
             "@pane": 2,
-            "@session": 6,
-            "@tab": 7,
-            "@undoManager": 7
+            "@session": 7,
+            "@tab": 11,
+            "@undoManager": 8
         }
     },
     "findinfiles": {
@@ -148,9 +146,6 @@
             "json()": [
                 "/",
                 "/stylesheets",
-                "/images",
-                "/images/saml-passport",
-                "/stylesheets/enhance",
                 "/javascripts"
             ]
         }
@@ -161,6 +156,10 @@
     "search-history": {
         "search": {
             "json()": [
+                "margin",
+                "code\r\n",
+                "code",
+                "wrapper",
                 "inner"
             ]
         }
@@ -171,7 +170,11 @@
             "meta": {
                 "accessList": [
                     "tab2",
-                    "tab6"
+                    "tab6",
+                    "tab4",
+                    "tab5",
+                    "tab7",
+                    "tab8"
                 ]
             },
             "name": "pane0",
@@ -182,14 +185,12 @@
                     "path": "/index.html",
                     "className": [
                         "tab2",
-                        "changed",
-                        "focus",
-                        "saving"
+                        "focus"
                     ],
                     "document": {
-                        "changed": true,
+                        "changed": false,
                         "meta": {
-                            "timestamp": 1463042938309
+                            "timestamp": 1463212586248
                         },
                         "filter": true,
                         "title": "index.html",
@@ -209,12 +210,193 @@
                     "document": {
                         "changed": false,
                         "meta": {
-                            "timestamp": 1463043032114
+                            "timestamp": 1463212682650
                         },
                         "filter": true,
                         "title": "stylesheet.css",
                         "tooltip": "/stylesheets/stylesheet.css",
                         "ace": {}
+                    },
+                    "editorType": "ace",
+                    "active": false
+                },
+                {
+                    "type": "tab",
+                    "name": "tab4",
+                    "path": "/stylesheets/github-dark.css",
+                    "className": [
+                        "tab4"
+                    ],
+                    "document": {
+                        "filter": true,
+                        "title": "github-dark.css",
+                        "tooltip": "/stylesheets/github-dark.css",
+                        "ace": {
+                            "folds": [],
+                            "scrolltop": 0,
+                            "scrollleft": 0,
+                            "selection": {
+                                "start": {
+                                    "row": 3,
+                                    "column": 31
+                                },
+                                "end": {
+                                    "row": 3,
+                                    "column": 31
+                                },
+                                "isBackwards": false
+                            },
+                            "options": {
+                                "guessTabSize": true,
+                                "useWrapMode": false,
+                                "wrapToView": true
+                            },
+                            "firstLineState": {
+                                "row": 122,
+                                "state": "start",
+                                "mode": "ace/mode/css"
+                            }
+                        },
+                        "hash": "65ce7f7929fb8267287603b626a1e9ce836b00aa",
+                        "meta": {
+                            "timestamp": 1463040223896
+                        },
+                        "changed": false
+                    },
+                    "editorType": "ace",
+                    "active": false
+                },
+                {
+                    "type": "tab",
+                    "name": "tab5",
+                    "path": "/stylesheets/enhance/classes.css",
+                    "className": [
+                        "tab5"
+                    ],
+                    "document": {
+                        "filter": true,
+                        "title": "classes.css",
+                        "tooltip": "/stylesheets/enhance/classes.css",
+                        "ace": {
+                            "folds": [],
+                            "scrolltop": 0,
+                            "scrollleft": 0,
+                            "selection": {
+                                "start": {
+                                    "row": 0,
+                                    "column": 0
+                                },
+                                "end": {
+                                    "row": 0,
+                                    "column": 0
+                                },
+                                "isBackwards": true
+                            },
+                            "options": {
+                                "guessTabSize": true,
+                                "useWrapMode": false,
+                                "wrapToView": true
+                            },
+                            "firstLineState": {
+                                "row": 122,
+                                "mode": "ace/mode/css"
+                            }
+                        },
+                        "hash": "288738b08d5fb71e3c2cf308f88208148451871e",
+                        "meta": {
+                            "timestamp": 1436667632000
+                        },
+                        "changed": false
+                    },
+                    "editorType": "ace",
+                    "active": false
+                },
+                {
+                    "type": "tab",
+                    "name": "tab7",
+                    "path": "/stylesheets/enhance/zoom.css",
+                    "className": [
+                        "tab7"
+                    ],
+                    "document": {
+                        "filter": true,
+                        "title": "zoom.css",
+                        "tooltip": "/stylesheets/enhance/zoom.css",
+                        "ace": {
+                            "folds": [],
+                            "scrolltop": 0,
+                            "scrollleft": 0,
+                            "selection": {
+                                "start": {
+                                    "row": 0,
+                                    "column": 0
+                                },
+                                "end": {
+                                    "row": 0,
+                                    "column": 0
+                                },
+                                "isBackwards": false
+                            },
+                            "options": {
+                                "guessTabSize": true,
+                                "useWrapMode": false,
+                                "wrapToView": true
+                            },
+                            "firstLineState": {
+                                "row": 122,
+                                "mode": "ace/mode/css"
+                            }
+                        },
+                        "hash": "ca0398620321a92246b3398e1823e3c695788d22",
+                        "meta": {
+                            "timestamp": 1436667632000
+                        },
+                        "changed": false
+                    },
+                    "editorType": "ace",
+                    "active": false
+                },
+                {
+                    "type": "tab",
+                    "name": "tab8",
+                    "path": "/code/embedLdap.xml",
+                    "className": [
+                        "tab8"
+                    ],
+                    "document": {
+                        "filter": true,
+                        "title": "embedLdap.xml",
+                        "tooltip": "/code/embedLdap.xml",
+                        "ace": {
+                            "folds": [],
+                            "scrolltop": 0,
+                            "scrollleft": 0,
+                            "selection": {
+                                "start": {
+                                    "row": 0,
+                                    "column": 0
+                                },
+                                "end": {
+                                    "row": 3,
+                                    "column": 15
+                                },
+                                "isBackwards": true
+                            },
+                            "options": {
+                                "guessTabSize": true,
+                                "useWrapMode": false,
+                                "wrapToView": true
+                            },
+                            "firstLineState": {
+                                "row": 122,
+                                "mode": "ace/mode/xml"
+                            }
+                        },
+                        "hash": "6b4983340890c5aa7b57168c79125beb78325917",
+                        "meta": {
+                            "timestamp": 1463127663524
+                        },
+                        "changed": false
                     },
                     "editorType": "ace",
                     "active": false
@@ -227,7 +409,7 @@
     },
     "tree_selection": {
         "json()": [
-            "/"
+            "/stylesheets/stylesheet.css"
         ]
     }
 }

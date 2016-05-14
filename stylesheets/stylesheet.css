@@ -456,7 +456,7 @@ h1.title {
 }
 
 .wrapper {
-  width: 675px;
+  width: 975px;
   margin: 0 auto;
 }
 
@@ -976,4 +976,9 @@ footer .owner p a {
 .interlign {
   content :"";
   margin-bottom:1em;
+}
+
+.excerpt {
+  width : 800px;
+  margin-left :  20px;
 }
