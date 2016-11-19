@@ -1,4 +1,0 @@
-<EmbeddedLDAP>
-    <Property name="enable">false</Property>
-    ... 
-</EmbeddedLDAP>

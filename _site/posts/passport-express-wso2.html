@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/public/stylesheets/bs.css">
+    <link rel="stylesheet" href="/public/stylesheets/enhance/zoom.css">
+    <link rel="stylesheet" href="/public/stylesheets/enhance/classes.css">
+    <link rel="stylesheet" href="/public/stylesheets/styles.css">
+    <link rel="stylesheet" href="/public/stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="canonical" href="http://localhost:4000/posts/passport-express-wso2">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+      <link rel="icon" type="image/x-icon"  href="/favicon.ico" />
+    <title>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS | imatmati-blog</title>
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+    <div class="wrapper">
+        <section>
+          <div id="title">
+  <h1>
+    
+		  <a id="git-ic" href="https://github.com/imatmati"><i class="fa fa-github"></i></a>	
+    
+
+    
+      <a id="so-ic" href="https://fr.linkedin.com/in/ivan-matmati-0a0277b0"><i class="fa fa-linkedin"></i></a>
+    
+
+		
+    <a id="sitename" href="">imatmati.github.io</a>
+  </h1>
+
+  <!-- Add something about you in p tag-->
+  <p>Because technics matters ...</p>
+  <hr/>
+  
+  <span class="credits left">
+  <a href="/blog">Blog</a> |
+  <a href="/archive">Archive</a> |
+  <a href="/about">About</a>
+</span>
+
+<span class="credits right">
+
+</span>
+ 
+	 
+</div>
+
+
+
+
+          <div class="post-title">
+    <h1>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS</h1>
+    <p class="text-muted">14 May 2016 | <i class="fa fa-tag"></i>
+  
+  
+  <a class="text-muted" href="/tags/#SAML">SAML</a>,
+  
+  <a class="text-muted" href="/tags/#Authentication">Authentication</a>,
+  
+  <a class="text-muted" href="/tags/#WSO2">WSO2</a>,
+  
+  <a class="text-muted" href="/tags/#LDAP">LDAP</a>,
+  
+  <a class="text-muted" href="/tags/#Passport">Passport</a>,
+  
+  <a class="text-muted" href="/tags/#Express">Express</a>
+  
+
+
+</p>
+
+</div>
+
+  <p>Authentication with standard protocols is often a daunting task for most people. SAML, OAuth2, etc. seem cumbersome and too difficult to integrate in an application. What’s more, their roles and limits are fuzzy to a lot of developpers. Let’s try to demystify this natural functionnality in any web application. In this tutorial, we’ll use SAML2 with WSO2 Identity Server connected to a LDAP server as a users store. The application will be implemented with Express / Passport.</p>
+
+<h1 id="prerequisites">Prerequisites</h1>
+
+<ul>
+  <li><a href="http://apache.mirrors.ovh.net/ftp.apache.org/dist/directory/studio/2.0.0.v20151221-M10/ApacheDirectoryStudio-2.0.0.v20151221-M10-win32.win32.x86_64.zip">Apache studio directory</a></li>
+  <li><a href="https://nodejs.org/dist/v4.4.3/node-v4.4.3-x64.msi">Node</a></li>
+  <li><a href="http://product-dist.wso2.com/products/identity-server/5.1.0/wso2is-5.1.0.zip">WSO2</a></li>
+  <li><a href="https://github.com/c9/core">C9</a></li>
+</ul>
+
+<p>Click on the links to get the components of our tutorial in the right version used. Apache Directory Studio will be our LDAP server, but of course you should be able to use any other LDAP Server in your own environment. WSO2 is well documented and easy to manage, it will take the role of our Identity Server. And C9 is my little sweet IDE for any Javascript development, I recommend it but you can use any other one convenient to you. Do I need to present Node ?</p>
+
+<h1 id="ldap-server-creation">LDAP Server creation</h1>
+
+<p>After installation of all requirements, let’s begin to configure our environment.Launch Apache Studio and then create a LDAP Server. In the “LDAP Servers” tab, click on “New Server” button.</p>
+
+<p><img src="../public/images/saml-passport/ldap-creation.png" alt="New LDAP Server" class="cropped" data-action="zoom" /></p>
+
+<p>Then, check the ports of your newly created LDAP Server by double clicking the new server.</p>
+
+<p><img src="../public/images/saml-passport/ldap-ports.png" alt="LDAP Ports" class="cropped" data-action="zoom" /></p>
+
+<p>Now, proceed to create a connection to your LDAP Server as shown below</p>
+
+<p><img src="../public/images/saml-passport/ldap-connection.png" alt="LDAP Connection" class="cropped" data-action="zoom" /></p>
+
+<p>You should get a confirmation message</p>
+
+<p><img src="../public/images/saml-passport/ldap-connection-created.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Open it by double-clicking it in the “connection” tab or by contextual menu</p>
+
+<p><img src="../public/images/saml-passport/ldap-connection-open.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<h1 id="users--groups-creation">Users &amp; Groups creation</h1>
+
+<p>Users and roles can be created directly in WSO2, but for demonstration’s sake let’s create them in the LDAP. If you want to automatize users and roles creation or import, you’ll need this section. First, create a user in the LDAP under ou=users,ou=system.</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-1.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Follow the assistant as described</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-2.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Give it a inetOrgPerson class, automatically a few others classes will be added</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-3.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Then choose a name as its uid. Here, very cleverly I choose “me” as the best name describing … me.</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-4.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>A sn and cn are needed to confom to the LDAP Schema. Add them in the assistant before trying to create it</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-5.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>No authentication without password, add it as a new attribute by these two steps by right-click then “New Attribute”</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-6.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Then</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-7.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Choose a good and secured password. And more securely, choose a salted algo like SSHA</p>
+
+<p><img src="../public/images/saml-passport/ldap-user-creation-8.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Now, create a group for our user as follows. First, create a new entry under ou=groups,ou=system with “groupOfNames” class. Let’s call it “basic”</p>
+
+<p><img src="../public/images/saml-passport/ldap-group-creation-1.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p><img src="../public/images/saml-passport/ldap-group-creation-2.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Then add “me” user as a member after clicking next</p>
+
+<p><img src="../public/images/saml-passport/ldap-group-creation-3.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<h2 id="wso2-configuration">WSO2 configuration</h2>
+
+<p>WSO2 runs an embedded LDAP Server we must disable and replace by our own one.To that purpose, in %WSO2_HOME/repository/conf/identity/embedded-ldap.xml, turn it off.</p>
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;EmbeddedLDAP&gt;</span>
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"enable"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/Property&gt;</span>
+    ...
+<span class="nt">&lt;/EmbeddedLDAP&gt;</span>
+</code></pre>
+</div>
+<p><br />
+Now, let’s indicates how to connect to our LDAP Server, change the following section from %WSO2_HOME/repository/conf/user-mgt.xml according to your environment.</p>
+
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;UserStoreManager</span> <span class="na">class=</span><span class="s">"org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"ConnectionURL"</span><span class="nt">&gt;</span>ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}<span class="nt">&lt;/Property&gt;</span>
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"ConnectionPassword"</span><span class="nt">&gt;</span>admin<span class="nt">&lt;/Property&gt;</span>
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"UserSearchBase"</span><span class="nt">&gt;</span>ou=Users,dc=wso2,dc=org<span class="nt">&lt;/Property&gt;</span>
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"UserEntryObjectClass"</span><span class="nt">&gt;</span>identityPerson<span class="nt">&lt;/Property&gt;</span>
+                                .....
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"GroupSearchBase"</span><span class="nt">&gt;</span>ou=Groups,dc=wso2,dc=org<span class="nt">&lt;/Property&gt;</span>
+                                .....
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"SCIMEnabled"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/Property&gt;</span>
+                                .....
+  <span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"defaultRealmName"</span><span class="nt">&gt;</span>WSO2.ORG<span class="nt">&lt;/Property&gt;</span>
+                                ...
+<span class="nt">&lt;/UserStoreManager&gt;</span>
+</code></pre>
+</div>
+<p><br />
+In our case, we’ll change them to</p>
+<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"ConnectionURL"</span><span class="nt">&gt;</span>ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}<span class="nt">&lt;/Property&gt;</span>
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"ConnectionPassword"</span><span class="nt">&gt;</span>secret<span class="nt">&lt;/Property&gt;</span>
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"UserSearchBase"</span><span class="nt">&gt;</span>ou=users,ou=system<span class="nt">&lt;/Property&gt;</span>
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"UserEntryObjectClass"</span><span class="nt">&gt;</span>inetOrgPerson<span class="nt">&lt;/Property&gt;</span>
+    ...
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"GroupSearchBase"</span><span class="nt">&gt;</span>ou=groups,ou=system<span class="nt">&lt;/Property&gt;</span>
+    ...
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"SCIMEnabled"</span><span class="nt">&gt;</span>false<span class="nt">&lt;/Property&gt;</span>
+    ...
+<span class="nt">&lt;Property</span> <span class="na">name=</span><span class="s">"defaultRealmName"</span><span class="nt">&gt;</span>mycompany.org<span class="nt">&lt;/Property&gt;</span>
+</code></pre>
+</div>
+<p><br />
+This section needs some explanations.</p>
+
+<ul>
+  <li>I didn’t change the port configuration as the expression in ConnectionURL property resolves to 10389 (have a look at %WSO2_HOME/repository/conf/carbon.xml then Server/Ports/EmbeddedLDAP/LDAPServerPort element to get the value). You remember we checked the port value of our LDAP Server and it was indeed 10389. So no need to change it. Of course, in our example we’ll address a local server but in your production environment you’ll have to name it instead of localhost.</li>
+  <li>The default password of the admin user of ApacheDirectoryStudio is secret so change it in ConnectionPassword property.</li>
+  <li>The base of our user entries is ou=users,ou=system in our LDAP Server so be the value of UserSearchBase property.</li>
+  <li>Our class of users was inetOrgPerson not identityPerson.Accord UserEntryObjectClass to this value.</li>
+  <li>The group entries base is located elsewhere than the default configuration. Switch GroupSearchBase to ou=groups,ou=system for the same reason as the users entries.</li>
+  <li>Turn SCIM off, we don’t need it here.</li>
+  <li>Of course name your realm according to your topology, here I chose mycompany.org as defaultRealmName.</li>
+</ul>
+
+<h2 id="user--role">User &amp; Role</h2>
+
+<p>Launch the WSO2 IS server by %WSO2_HOME/bin/wso2server.bat start. Don’t forget to set JAVA_HOME before that.
+Do you remember our ‘me’ user and its ‘basic’ group ? Let’s find them in our WSO2 server.First, under ‘Users and Roles’/List/Users in the console you’ll find our user.</p>
+
+<p><img src="../public/images/saml-passport/ldap-console-resultat.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>And our group ? It’s changed to a role in WSO2. Find it under ‘Users and Roles’/List/Roles</p>
+
+<p><img src="../public/images/saml-passport/ldap-console-resultat2.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Of course, you can verify the user role membership by clicking on ‘View Users’ in the Roles panel or ‘View Roles’ in the Users panel.</p>
+
+<h2 id="service-provider--saml2">Service Provider &amp; SAML2</h2>
+
+<p>Then, create a service provider by clicking on ‘Service Providers’/Add. Name it according to your desire and register it. Here, I named it ExpressAppServiceProvider.</p>
+
+<p><img src="../public/images/saml-passport/sso-service-provider-1.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>An important part of our configuration is to determine what attributes will be sent in response of a successful authentication. These attributes can be very different depending on the user store. To solve part of this problem, attributes are not declared directly but referenced by general and ‘standard’ names. These names are presented as claims. Claims are nothing more than standardized URI names to identify an attribute. However, there is no uniq way to use claims so a collection of possibilities is offered to your choice. In our tutorial, we choose to send back the email address of our authenticated user. So in the next screen after registration of our Service Provider do it this way.</p>
+
+<p><img src="../public/images/saml-passport/sso-service-provider-2.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>We want to use SAML2. We’ll configure it by clicking ‘configure’ under ‘Inbound Authentication Configuration’/’SAML2 Web SSO Configuration’</p>
+
+<p><img src="../public/images/saml-passport/sso-service-provider-3.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Configure our authentication as follows</p>
+
+<p><img src="../public/images/saml-passport/sso-service-provider-4.png" alt="LDAP Confirmation" class="cropped" data-action="zoom" /></p>
+
+<p>Here we identify our application with an issuer id (issuer of authentication requests of course). Then we must indicate the URL the SAML response will be returned to. Insert the URL in ‘Assertion Consumer URLs’ then click add and choose it in the ‘Default Assertion Consumer URL’. Note these two important informations as we’ll need them shortly in our application.</p>
+<h2 id="application-express--passport">Application Express / Passport</h2>
+
+<p>Passport is a javascript library managing different kind of protocols for authentication and authorization. We’ll use it in a simple Express Application for demonstration purpose.</p>
+
+<p>You’ll have to install its SAML plugin as well.First create your application by installing dependencies. Here you get the package.json I used for the tutorial.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="w">    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"express-saml"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"server.js"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nt">"keywords"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"express"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"saml"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nt">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ivan matmati"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ISC"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"body-parser"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.15.1"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"express"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^4.13.4"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"express-session"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.13.0"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"passport"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.3.2"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"passport-saml"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.15.0"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+As you can notice, a specific plugin has been added to Passport to take care of SAML messages. The plugin used is passport-saml. Then follows the code example to get authentication from WSO2 through SAML2 protocol.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"express"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">passport</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"passport"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">SamlStrategy</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'passport-saml'</span><span class="p">).</span><span class="nx">Strategy</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">bodyParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"body-parser"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">"express-session"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">bodyParser</span><span class="p">.</span><span class="nx">urlencoded</span><span class="p">({</span>
+  <span class="na">extended</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span> <span class="na">secret</span><span class="p">:</span> <span class="s1">'this shit hits'</span><span class="p">}));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">passport</span><span class="p">.</span><span class="nx">initialize</span><span class="p">());</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">passport</span><span class="p">.</span><span class="nx">session</span><span class="p">());</span>
+    
+<span class="kd">var</span> <span class="nx">redirectLogin</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="nx">res</span><span class="p">,</span><span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">req</span><span class="p">.</span><span class="nx">isAuthenticated</span><span class="p">())</span> <span class="p">{</span>
+       <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">"/myapp/login"</span><span class="p">);</span>
+   <span class="p">}</span>
+   <span class="nx">next</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="nx">passport</span><span class="p">.</span><span class="nx">serializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+     <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+<span class="p">});</span>
+    
+<span class="nx">passport</span><span class="p">.</span><span class="nx">deserializeUser</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+     
+  <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+<span class="p">});</span>
+    
+<span class="nx">passport</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="k">new</span> <span class="nx">SamlStrategy</span><span class="p">({</span>
+    <span class="na">entryPoint</span><span class="p">:</span> <span class="s1">'https://localhost:9443/samlsso'</span><span class="p">,</span>
+    <span class="na">issuer</span><span class="p">:</span> <span class="s1">'MyAppExpress'</span>
+  <span class="p">},</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">profile</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">myUser</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">email</span> <span class="p">:</span> <span class="nx">profile</span><span class="p">.</span><span class="nx">nameID</span>
+    <span class="p">}</span>
+    <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">myUser</span><span class="p">);</span>
+  <span class="p">}));</span>
+    
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/myapp/login'</span><span class="p">,</span>
+  <span class="nx">passport</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'saml'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">successRedirect</span><span class="p">:</span> <span class="s2">"/myapp"</span><span class="p">,</span>
+    <span class="na">failureRedirect</span><span class="p">:</span> <span class="s2">"/myapp/login"</span><span class="p">,</span>
+  <span class="p">}));</span>
+    
+    
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/myapp/saml'</span><span class="p">,</span> <span class="nx">passport</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'saml'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">failureRedirect</span><span class="p">:</span> <span class="s2">"/myapp/login"</span><span class="p">,</span>
+    <span class="na">failureFlash</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">})</span>
+  <span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">"/myapp"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+    
+    
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/myapp"</span><span class="p">,</span><span class="nx">redirectLogin</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+   
+    <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"you're authenticated !!!! "</span><span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">user</span><span class="p">));</span>
+<span class="p">});</span>
+    
+    
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span> <span class="o">||</span> <span class="mi">8080</span><span class="p">);</span>
+</code></pre>
+</div>
+<p><br />
+The logic is quiet simple.
+First, we need to create a session in express so that authenticated users can be recognized in subsequent calls. To that end, we use express-session. After the classic initialization of Passport by a call to initialize, we inject the returned middleware into our Express application. And then we finish the session management by “inserting” the session manager of Passport by a call to its session() method. All of this is clearly explained in the github pages of Passport.</p>
+
+<p>Just before these initialization lines, you certainly noticed the use of an other middleware, bodyParser. Why ? it’ll become clear afterwards when we’ll reach the SAML response management.</p>
+
+<p>redirectLogin is a middleware we create to check if the user is authenticated when he tries to reach some resources. Its role is to redirect to the login page if not.</p>
+
+<p>serializeUser and deserializeUser are the means used by Passport to manipulate user information in the session. Here we simply decide to keep the profile returned itself.</p>
+
+<p>The registration of our Passport Strategyy is classic. Let’s explain the configuration object.The ‘entryPoint’ is the URL of the identity provider, here our WSO2 IS SAML URL endpoint. Then the ‘issuer’ identifies us and allows mapping with the configuration of Service Provider we inserted previously in WSO2 IS. The callback provided serves to create a custom user object from the profile returned. After done method is executed, the user object is injected into the Express request object and is obtainable by request.user.</p>
+
+<p>To redirect the login to WSO2 server, we insert the middleware of Passport as the uniq one of the /myapp/login URL mapping. The configuration is straightforward.</p>
+
+<p>Here comes the second element we configure in our Service Provider section. The URL of our application that should be called with the assertion information about our user. These informations are posted so we use a POST configuration for this URL. And here comes into play the bodyParser. Its role is to read information from the body of this POST and make it available. Finally by the middleware added, we redirect to the main page of our application after success.</p>
+
+<p>The main page of our application simply writes information about our user by getting the user object from request object.</p>
+
+<p>How to get more information from our user ? Simply by adding claims in the WSO2 console and get these informations from the profile returned to inject it into our user object.</p>
+
+<p>If you’re curious about the kind of response sent by WSO2 here is what I got :</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHNhbWwycDpSZXNwb25zZSBEZXN0aW5hdGlvbj0iaHR0cDovL2xvY2FsaG9zdDo4MDgwL215YXBwL3NhbWwiIElEPSJpZmNob2RjZ2Jka21lZm9naGJoaGFrbGtrbWhoZGxlaWFnZWVnaGRmIiBJblJlc3BvbnNlVG89Il9kMDNmODc4MDY3MmYzMjFhY2RkMiIgSXNzdWVJbnN0YW50PSIyMDE2LTA1LTE0VDE0OjM0OjQ2LjYwNloiIFZlcnNpb249IjIuMCIgeG1sbnM6c2FtbDJwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiPjxzYW1sMjpJc3N1ZXIgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6bmFtZWlkLWZvcm1hdDplbnRpdHkiIHhtbG5zOnNhbWwyPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIj5sb2NhbGhvc3Q8L3NhbWwyOklzc3Vlcj48c2FtbDJwOlN0YXR1cz48c2FtbDJwOlN0YXR1c0NvZGUgVmFsdWU9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpzdGF0dXM6U3VjY2VzcyIvPjwvc2FtbDJwOlN0YXR1cz48c2FtbDI6QXNzZXJ0aW9uIElEPSJub2pocGJvaW5nZnBwZ3BsYWNoZGpta2VrZmRkZW9tZG5qZGlvbGthIiBJc3N1ZUluc3RhbnQ9IjIwMTYtMDUtMTRUMTQ6MzQ6NDYuNjA2WiIgVmVyc2lvbj0iMi4wIiB4bWxuczpzYW1sMj0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFzc2VydGlvbiI+PHNhbWwyOklzc3VlciBGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpuYW1laWQtZm9ybWF0OmVudGl0eSI+bG9jYWxob3N0PC9zYW1sMjpJc3N1ZXI+PGRzOlNpZ25hdHVyZSB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyI+PGRzOlNpZ25lZEluZm8+PGRzOkNhbm9uaWNhbGl6YXRpb25NZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz48ZHM6U2lnbmF0dXJlTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI3JzYS1zaGExIi8+PGRzOlJlZmVyZW5jZSBVUkk9IiNub2pocGJvaW5nZnBwZ3BsYWNoZGpta2VrZmRkZW9tZG5qZGlvbGthIj48ZHM6VHJhbnNmb3Jtcz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI2VudmVsb3BlZC1zaWduYXR1cmUiLz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8xMC94bWwtZXhjLWMxNG4jIi8+PC9kczpUcmFuc2Zvcm1zPjxkczpEaWdlc3RNZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjc2hhMSIvPjxkczpEaWdlc3RWYWx1ZT5ORlhGWkZiN09IVHphN3EyQlJLVzdja3h2MlE9PC9kczpEaWdlc3RWYWx1ZT48L2RzOlJlZmVyZW5jZT48L2RzOlNpZ25lZEluZm8+PGRzOlNpZ25hdHVyZVZhbHVlPlh4M3VXY0QrMUptZ2k0NFFNWW96TEFROEYwb0Q0UmFlVWpXK2RRZWRibDZTSGFvMDhFd1pDZmN1ekRMdDR1U3BxSXlLeGNLbkdRYkFRZ1gwWnNEb0sva3hkZy9KNk9yWEV4bzJpcm53MVE5RUVyMWdSajVNa3Zad1g0REFGdW9LZldMeUN4dGRWWGhtNW1EYXI4Yk13Znd2cEsxdXc1VjRoWkF1MktublpNYz08L2RzOlNpZ25hdHVyZVZhbHVlPjxkczpLZXlJbmZvPjxkczpYNTA5RGF0YT48ZHM6WDUwOUNlcnRpZmljYXRlPk1JSUNOVENDQVo2Z0F3SUJBZ0lFUzM0M2dqQU5CZ2txaGtpRzl3MEJBUVVGQURCVk1Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQXdDUTBFeEZqQVVCZ05WQkFjTURVMXZkVzUwWVdsdUlGWnBaWGN4RFRBTEJnTlZCQW9NQkZkVFR6SXhFakFRQmdOVkJBTU1DV3h2WTJGc2FHOXpkREFlRncweE1EQXlNVGt3TnpBeU1qWmFGdzB6TlRBeU1UTXdOekF5TWpaYU1GVXhDekFKQmdOVkJBWVRBbFZUTVFzd0NRWURWUVFJREFKRFFURVdNQlFHQTFVRUJ3d05UVzkxYm5SaGFXNGdWbWxsZHpFTk1Bc0dBMVVFQ2d3RVYxTlBNakVTTUJBR0ExVUVBd3dKYkc5allXeG9iM04wTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FDVXAvb1YxdldjOC9Ua1FTaUF2VG91c016T000YXNCMmlsdHIyUUtvem5pNWFWRnU4MThNcE9MWklyOExNblR6V2xsSnZ2YUE1UkFBZHBiRUNiKzQ4RmpiQmUwaHNlVWRONUhwd3ZuSC9EVzhaY2NHdms1M0k2T3JxN2hMQ3YxWkh0dU9Db2tnaHovQVRyaHlQcStRa3RNZlhuUlM0SHJLR0pUenhhQ2NVN09RSURBUUFCb3hJd0VEQU9CZ05WSFE4QkFmOEVCQU1DQlBBd0RRWUpLb1pJaHZjTkFRRUZCUUFEZ1lFQVc1d1BSN2NyMUxBZHErSXJSNDRpUWxSRzVJVENaWFk5aEkwUHlnTFAyckhBTmgrUFlmVG14YnVPbnlrTkd5aE02RmpGTGJXMnVaSFFUWTFqTXJQcHJqT3JteUs1c2pKUk80ZDFEZUdIVC9ZbklqczlKb2dSS3Y0WEhFQ3dMdElWZEFiSWRXSEV0VlpKeU1Ta3RjeXlzRmN2dWhQUUs4UWMvRS9XcTh1SFNDbz08L2RzOlg1MDlDZXJ0aWZpY2F0ZT48L2RzOlg1MDlEYXRhPjwvZHM6S2V5SW5mbz48L2RzOlNpZ25hdHVyZT48c2FtbDI6U3ViamVjdD48c2FtbDI6TmFtZUlEIEZvcm1hdD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6MS4xOm5hbWVpZC1mb3JtYXQ6ZW1haWxBZGRyZXNzIj5tZUBmYWkuY29tPC9zYW1sMjpOYW1lSUQ+PHNhbWwyOlN1YmplY3RDb25maXJtYXRpb24gTWV0aG9kPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6Y206YmVhcmVyIj48c2FtbDI6U3ViamVjdENvbmZpcm1hdGlvbkRhdGEgSW5SZXNwb25zZVRvPSJfZDAzZjg3ODA2NzJmMzIxYWNkZDIiIE5vdE9uT3JBZnRlcj0iMjAxNi0wNS0xNFQxNDozOTo0Ni42MDZaIiBSZWNpcGllbnQ9Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9teWFwcC9zYW1sIi8+PC9zYW1sMjpTdWJqZWN0Q29uZmlybWF0aW9uPjwvc2FtbDI6U3ViamVjdD48c2FtbDI6Q29uZGl0aW9ucyBOb3RCZWZvcmU9IjIwMTYtMDUtMTRUMTQ6MzQ6NDYuNjA2WiIgTm90T25PckFmdGVyPSIyMDE2LTA1LTE0VDE0OjM5OjQ2LjYwNloiPjxzYW1sMjpBdWRpZW5jZVJlc3RyaWN0aW9uPjxzYW1sMjpBdWRpZW5jZT5NeUFwcEV4cHJlc3M8L3NhbWwyOkF1ZGllbmNlPjwvc2FtbDI6QXVkaWVuY2VSZXN0cmljdGlvbj48L3NhbWwyOkNvbmRpdGlvbnM+PHNhbWwyOkF1dGhuU3RhdGVtZW50IEF1dGhuSW5zdGFudD0iMjAxNi0wNS0xNFQxNDozNDo0Ni42MDhaIj48c2FtbDI6QXV0aG5Db250ZXh0PjxzYW1sMjpBdXRobkNvbnRleHRDbGFzc1JlZj51cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YWM6Y2xhc3NlczpQYXNzd29yZDwvc2FtbDI6QXV0aG5Db250ZXh0Q2xhc3NSZWY+PC9zYW1sMjpBdXRobkNvbnRleHQ+PC9zYW1sMjpBdXRoblN0YXRlbWVudD48L3NhbWwyOkFzc2VydGlvbj48L3NhbWwycDpSZXNwb25zZT4=
+</code></pre>
+</div>
+<p><br />
+Yes, it’s Base 64 encoded, so decode it and you’ll get something like :</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;saml2p:Response</span> <span class="na">Destination=</span><span class="s">"http://localhost:8080/myapp/saml"</span> <span class="na">ID=</span><span class="s">"ifchodcgbdkmefoghbhhaklkkmhhdleiageeghdf"</span> <span class="na">InResponseTo=</span><span class="s">"_d03f8780672f321acdd2"</span> <span class="na">IssueInstant=</span><span class="s">"2016-05-14T14:34:46.606Z"</span> <span class="na">Version=</span><span class="s">"2.0"</span> <span class="na">xmlns:saml2p=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:protocol"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;saml2:Issuer</span> <span class="na">Format=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:nameid-format:entity"</span> <span class="na">xmlns:saml2=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:assertion"</span><span class="nt">&gt;</span>localhost<span class="nt">&lt;/saml2:Issuer&gt;</span>
+<span class="nt">&lt;saml2p:Status&gt;&lt;saml2p:StatusCode</span> <span class="na">Value=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:status:Success"</span><span class="nt">/&gt;&lt;/saml2p:Status&gt;</span>
+<span class="nt">&lt;saml2:Assertion</span> <span class="na">ID=</span><span class="s">"nojhpboingfppgplachdjmkekfddeomdnjdiolka"</span> <span class="na">IssueInstant=</span><span class="s">"2016-05-14T14:34:46.606Z"</span> <span class="na">Version=</span><span class="s">"2.0"</span> <span class="na">xmlns:saml2=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:assertion"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;saml2:Issuer</span> <span class="na">Format=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:nameid-format:entity"</span><span class="nt">&gt;</span>localhost<span class="nt">&lt;/saml2:Issuer&gt;&lt;ds:Signature</span> <span class="na">xmlns:ds=</span><span class="s">"http://www.w3.org/2000/09/xmldsig#"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;ds:SignedInfo&gt;&lt;ds:CanonicalizationMethod</span> <span class="na">Algorithm=</span><span class="s">"http://www.w3.org/2001/10/xml-exc-c14n#"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ds:SignatureMethod</span> <span class="na">Algorithm=</span><span class="s">"http://www.w3.org/2000/09/xmldsig#rsa-sha1"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ds:Reference</span> <span class="na">URI=</span><span class="s">"#nojhpboingfppgplachdjmkekfddeomdnjdiolka"</span><span class="nt">&gt;&lt;ds:Transforms&gt;&lt;ds:Transform</span> <span class="na">Algorithm=</span><span class="s">"http://www.w3.org/2000/09/xmldsig#enveloped-signature"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ds:Transform</span> <span class="na">Algorithm=</span><span class="s">"http://www.w3.org/2001/10/xml-exc-c14n#"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/ds:Transforms&gt;&lt;ds:DigestMethod</span> <span class="na">Algorithm=</span><span class="s">"http://www.w3.org/2000/09/xmldsig#sha1"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;ds:DigestValue&gt;</span>NFXFZFb7OHTza7q2BRKW7ckxv2Q=<span class="nt">&lt;/ds:DigestValue&gt;</span>
+<span class="nt">&lt;/ds:Reference&gt;</span>
+<span class="nt">&lt;/ds:SignedInfo&gt;&lt;ds:SignatureValue&gt;</span>Xx3uWcD+1Jmgi44QMYozLAQ8F0oD4RaeUjW+dQedbl6SHao08EwZCfcuzDLt4uSpqIyKxcKnGQbAQgX0ZsDoK/kxdg/J6OrXExo2irnw1Q9EEr1gRj5MkvZwX4DAFuoKfWLyCxtdVXhm5mDar8bMwfwvpK1uw5V4hZAu2KnnZMc=<span class="nt">&lt;/ds:SignatureValue&gt;&lt;ds:KeyInfo&gt;&lt;ds:X509Data&gt;</span>
+<span class="nt">&lt;ds:X509Certificate&gt;</span>MIICNTCCAZ6gAwIBAgIES343gjANBgkqhkiG9w0BAQUFADBVMQswCQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxDTALBgNVBAoMBFdTTzIxEjAQBgNVBAMMCWxvY2FsaG9zdDAeFw0xMDAyMTkwNzAyMjZaFw0zNTAyMTMwNzAyMjZaMFUxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzENMAsGA1UECgwEV1NPMjESMBAGA1UEAwwJbG9jYWxob3N0MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzOM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXnRS4HrKGJTzxaCcU7OQIDAQABoxIwEDAOBgNVHQ8BAf8EBAMCBPAwDQYJKoZIhvcNAQEFBQADgYEAW5wPR7cr1LAdq+IrR44iQlRG5ITCZXY9hI0PygLP2rHANh+PYfTmxbuOnykNGyhM6FjFLbW2uZHQTY1jMrPprjOrmyK5sjJRO4d1DeGHT/YnIjs9JogRKv4XHECwLtIVdAbIdWHEtVZJyMSktcyysFcvuhPQK8Qc/E/Wq8uHSCo=<span class="nt">&lt;/ds:X509Certificate&gt;</span>
+<span class="nt">&lt;/ds:X509Data&gt;</span>
+<span class="nt">&lt;/ds:KeyInfo&gt;</span>
+<span class="nt">&lt;/ds:Signature&gt;</span>
+<span class="nt">&lt;saml2:Subject&gt;</span>
+<span class="nt">&lt;saml2:NameID</span> <span class="na">Format=</span><span class="s">"urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"</span><span class="nt">&gt;</span>me@fai.com<span class="nt">&lt;/saml2:NameID&gt;</span>
+<span class="nt">&lt;saml2:SubjectConfirmation</span> <span class="na">Method=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:cm:bearer"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;saml2:SubjectConfirmationData</span> <span class="na">InResponseTo=</span><span class="s">"_d03f8780672f321acdd2"</span> <span class="na">NotOnOrAfter=</span><span class="s">"2016-05-14T14:39:46.606Z"</span> <span class="na">Recipient=</span><span class="s">"http://localhost:8080/myapp/saml"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/saml2:SubjectConfirmation&gt;</span>
+<span class="nt">&lt;/saml2:Subject&gt;</span>
+<span class="nt">&lt;saml2:Conditions</span> <span class="na">NotBefore=</span><span class="s">"2016-05-14T14:34:46.606Z"</span> <span class="na">NotOnOrAfter=</span><span class="s">"2016-05-14T14:39:46.606Z"</span><span class="nt">&gt;&lt;saml2:AudienceRestriction&gt;</span>
+<span class="nt">&lt;saml2:Audience&gt;</span>MyAppExpress<span class="nt">&lt;/saml2:Audience&gt;</span>
+<span class="nt">&lt;/saml2:AudienceRestriction&gt;</span>
+<span class="nt">&lt;/saml2:Conditions&gt;</span>
+<span class="nt">&lt;saml2:AuthnStatement</span> <span class="na">AuthnInstant=</span><span class="s">"2016-05-14T14:34:46.608Z"</span><span class="nt">&gt;&lt;saml2:AuthnContext&gt;</span>
+<span class="nt">&lt;saml2:AuthnContextClassRef&gt;</span>urn:oasis:names:tc:SAML:2.0:ac:classes:Password<span class="nt">&lt;/saml2:AuthnContextClassRef&gt;</span>
+<span class="nt">&lt;/saml2:AuthnContext&gt;</span>
+<span class="nt">&lt;/saml2:AuthnStatement&gt;</span>
+<span class="nt">&lt;/saml2:Assertion&gt;</span>
+<span class="nt">&lt;/saml2p:Response&gt;</span>
+</code></pre>
+</div>
+
+
+<div class="post-footer">
+  
+</div>
+<hr/>
+
+
+  
+
+
+
+          <footer>
+<hr/>
+  <div class="left">  
+    &copy;2016.
+    Built with <a href="http://jekyllrb.com/">Jekyll</a> and
+    <a href="https://github.com/railsr/autm-rb">Autm-rb</a>
+  </div>
+
+  <div class="right">
+    
+      <a href=""><i class="fa fa-twitter fa-lg" style="color:#49B1F7;"></i></a>
+    </a>
+    
+  </div>
+</footer>
+
+        </section>
+    </div>
+    </div>
+    <script src="/public/javascripts/jquery.min.js"></script>
+    <script src="/public/javascripts/bootstrap.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/velocity/1.2.2/velocity.min.js"></script>
+    <script src="/public/javascripts/enhance.js"></script>
+   
+    <!-- Place your <script> tags here. -->
+
+<!-- disqus comment counter -->
+<script type="text/javascript">
+	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'test';
+
+	/* * * DON'T EDIT BELOW THIS LINE * * */
+	(function () {
+	    var s = document.createElement('script'); s.async = true;
+	    s.type = 'text/javascript';
+	    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+	}());
+</script>
+<!-- /disqus comment counter -->
+		
+		
+		
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- /google analytics -->
+
+  </body>
+</html>

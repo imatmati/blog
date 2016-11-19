@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>imatmati-blog</title>
+    <description></description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sat, 19 Nov 2016 18:53:22 +0100</pubDate>
+    <lastBuildDate>Sat, 19 Nov 2016 18:53:22 +0100</lastBuildDate>
+    <generator>Jekyll v3.3.0</generator>
+    
+      <item>
+        <title>SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS</title>
+        <description>&lt;p&gt;Authentication with standard protocols is often a daunting task for most people. SAML, OAuth2, etc. seem cumbersome and too difficult to integrate in an application. What’s more, their roles and limits are fuzzy to a lot of developpers. Let’s try to demystify this natural functionnality in any web application. In this tutorial, we’ll use SAML2 with WSO2 Identity Server connected to a LDAP server as a users store. The application will be implemented with Express / Passport.&lt;/p&gt;
+
+&lt;h1 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://apache.mirrors.ovh.net/ftp.apache.org/dist/directory/studio/2.0.0.v20151221-M10/ApacheDirectoryStudio-2.0.0.v20151221-M10-win32.win32.x86_64.zip&quot;&gt;Apache studio directory&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://nodejs.org/dist/v4.4.3/node-v4.4.3-x64.msi&quot;&gt;Node&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://product-dist.wso2.com/products/identity-server/5.1.0/wso2is-5.1.0.zip&quot;&gt;WSO2&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/c9/core&quot;&gt;C9&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Click on the links to get the components of our tutorial in the right version used. Apache Directory Studio will be our LDAP server, but of course you should be able to use any other LDAP Server in your own environment. WSO2 is well documented and easy to manage, it will take the role of our Identity Server. And C9 is my little sweet IDE for any Javascript development, I recommend it but you can use any other one convenient to you. Do I need to present Node ?&lt;/p&gt;
+
+&lt;h1 id=&quot;ldap-server-creation&quot;&gt;LDAP Server creation&lt;/h1&gt;
+
+&lt;p&gt;After installation of all requirements, let’s begin to configure our environment.Launch Apache Studio and then create a LDAP Server. In the “LDAP Servers” tab, click on “New Server” button.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-creation.png&quot; alt=&quot;New LDAP Server&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then, check the ports of your newly created LDAP Server by double clicking the new server.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-ports.png&quot; alt=&quot;LDAP Ports&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, proceed to create a connection to your LDAP Server as shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-connection.png&quot; alt=&quot;LDAP Connection&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You should get a confirmation message&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-connection-created.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Open it by double-clicking it in the “connection” tab or by contextual menu&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-connection-open.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;users--groups-creation&quot;&gt;Users &amp;amp; Groups creation&lt;/h1&gt;
+
+&lt;p&gt;Users and roles can be created directly in WSO2, but for demonstration’s sake let’s create them in the LDAP. If you want to automatize users and roles creation or import, you’ll need this section. First, create a user in the LDAP under ou=users,ou=system.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-1.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Follow the assistant as described&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-2.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Give it a inetOrgPerson class, automatically a few others classes will be added&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-3.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then choose a name as its uid. Here, very cleverly I choose “me” as the best name describing … me.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-4.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A sn and cn are needed to confom to the LDAP Schema. Add them in the assistant before trying to create it&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-5.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;No authentication without password, add it as a new attribute by these two steps by right-click then “New Attribute”&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-6.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-7.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Choose a good and secured password. And more securely, choose a salted algo like SSHA&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-user-creation-8.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, create a group for our user as follows. First, create a new entry under ou=groups,ou=system with “groupOfNames” class. Let’s call it “basic”&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-group-creation-1.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-group-creation-2.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Then add “me” user as a member after clicking next&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-group-creation-3.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;wso2-configuration&quot;&gt;WSO2 configuration&lt;/h2&gt;
+
+&lt;p&gt;WSO2 runs an embedded LDAP Server we must disable and replace by our own one.To that purpose, in %WSO2_HOME/repository/conf/identity/embedded-ldap.xml, turn it off.&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;EmbeddedLDAP&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;enable&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+    ...
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/EmbeddedLDAP&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+Now, let’s indicates how to connect to our LDAP Server, change the following section from %WSO2_HOME/repository/conf/user-mgt.xml according to your environment.&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;UserStoreManager&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ConnectionURL&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ConnectionPassword&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;admin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;UserSearchBase&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ou=Users,dc=wso2,dc=org&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;UserEntryObjectClass&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;identityPerson&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+                                .....
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GroupSearchBase&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ou=Groups,dc=wso2,dc=org&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+                                .....
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;SCIMEnabled&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+                                .....
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;defaultRealmName&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;WSO2.ORG&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+                                ...
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/UserStoreManager&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+In our case, we’ll change them to&lt;/p&gt;
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ConnectionURL&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ConnectionPassword&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;secret&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;UserSearchBase&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ou=users,ou=system&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;UserEntryObjectClass&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;inetOrgPerson&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+    ...
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GroupSearchBase&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;ou=groups,ou=system&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+    ...
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;SCIMEnabled&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+    ...
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;defaultRealmName&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;mycompany.org&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Property&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+This section needs some explanations.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;I didn’t change the port configuration as the expression in ConnectionURL property resolves to 10389 (have a look at %WSO2_HOME/repository/conf/carbon.xml then Server/Ports/EmbeddedLDAP/LDAPServerPort element to get the value). You remember we checked the port value of our LDAP Server and it was indeed 10389. So no need to change it. Of course, in our example we’ll address a local server but in your production environment you’ll have to name it instead of localhost.&lt;/li&gt;
+  &lt;li&gt;The default password of the admin user of ApacheDirectoryStudio is secret so change it in ConnectionPassword property.&lt;/li&gt;
+  &lt;li&gt;The base of our user entries is ou=users,ou=system in our LDAP Server so be the value of UserSearchBase property.&lt;/li&gt;
+  &lt;li&gt;Our class of users was inetOrgPerson not identityPerson.Accord UserEntryObjectClass to this value.&lt;/li&gt;
+  &lt;li&gt;The group entries base is located elsewhere than the default configuration. Switch GroupSearchBase to ou=groups,ou=system for the same reason as the users entries.&lt;/li&gt;
+  &lt;li&gt;Turn SCIM off, we don’t need it here.&lt;/li&gt;
+  &lt;li&gt;Of course name your realm according to your topology, here I chose mycompany.org as defaultRealmName.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;user--role&quot;&gt;User &amp;amp; Role&lt;/h2&gt;
+
+&lt;p&gt;Launch the WSO2 IS server by %WSO2_HOME/bin/wso2server.bat start. Don’t forget to set JAVA_HOME before that.
+Do you remember our ‘me’ user and its ‘basic’ group ? Let’s find them in our WSO2 server.First, under ‘Users and Roles’/List/Users in the console you’ll find our user.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-console-resultat.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And our group ? It’s changed to a role in WSO2. Find it under ‘Users and Roles’/List/Roles&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/ldap-console-resultat2.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Of course, you can verify the user role membership by clicking on ‘View Users’ in the Roles panel or ‘View Roles’ in the Users panel.&lt;/p&gt;
+
+&lt;h2 id=&quot;service-provider--saml2&quot;&gt;Service Provider &amp;amp; SAML2&lt;/h2&gt;
+
+&lt;p&gt;Then, create a service provider by clicking on ‘Service Providers’/Add. Name it according to your desire and register it. Here, I named it ExpressAppServiceProvider.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/sso-service-provider-1.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;An important part of our configuration is to determine what attributes will be sent in response of a successful authentication. These attributes can be very different depending on the user store. To solve part of this problem, attributes are not declared directly but referenced by general and ‘standard’ names. These names are presented as claims. Claims are nothing more than standardized URI names to identify an attribute. However, there is no uniq way to use claims so a collection of possibilities is offered to your choice. In our tutorial, we choose to send back the email address of our authenticated user. So in the next screen after registration of our Service Provider do it this way.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/sso-service-provider-2.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We want to use SAML2. We’ll configure it by clicking ‘configure’ under ‘Inbound Authentication Configuration’/’SAML2 Web SSO Configuration’&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/sso-service-provider-3.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Configure our authentication as follows&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../public/images/saml-passport/sso-service-provider-4.png&quot; alt=&quot;LDAP Confirmation&quot; class=&quot;cropped&quot; data-action=&quot;zoom&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here we identify our application with an issuer id (issuer of authentication requests of course). Then we must indicate the URL the SAML response will be returned to. Insert the URL in ‘Assertion Consumer URLs’ then click add and choose it in the ‘Default Assertion Consumer URL’. Note these two important informations as we’ll need them shortly in our application.&lt;/p&gt;
+&lt;h2 id=&quot;application-express--passport&quot;&gt;Application Express / Passport&lt;/h2&gt;
+
+&lt;p&gt;Passport is a javascript library managing different kind of protocols for authentication and authorization. We’ll use it in a simple Express Application for demonstration purpose.&lt;/p&gt;
+
+&lt;p&gt;You’ll have to install its SAML plugin as well.First create your application by installing dependencies. Here you get the package.json I used for the tutorial.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;express-saml&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;server.js&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;echo \&quot;Error: no test specified\&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;keywords&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;saml&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ivan matmati&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;dependencies&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;body-parser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^1.15.1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^4.13.4&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;express-session&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^1.13.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;passport&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^0.3.2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;passport-saml&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^0.15.0&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+As you can notice, a specific plugin has been added to Passport to take care of SAML messages. The plugin used is passport-saml. Then follows the code example to get authentication from WSO2 through SAML2 protocol.&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;express&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;passport&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SamlStrategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'passport-saml'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Strategy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;bodyParser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;body-parser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;session&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;express-session&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;express&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;bodyParser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;urlencoded&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;extended&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;secret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'this shit hits'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+    
+&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;redirectLogin&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;isAuthenticated&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;redirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/myapp/login&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;nx&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;serializeUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    
+&lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;deserializeUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     
+  &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    
+&lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;SamlStrategy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;entryPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'https://localhost:9443/samlsso'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;issuer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'MyAppExpress'&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myUser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;email&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;profile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;nameID&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;
+    
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/myapp/login'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;authenticate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'saml'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;successRedirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/myapp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;failureRedirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/myapp/login&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}));&lt;/span&gt;
+    
+    
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'/myapp/saml'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;passport&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;authenticate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'saml'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;failureRedirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/myapp/login&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;failureFlash&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;redirect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/myapp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    
+    
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/myapp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;redirectLogin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+   
+    &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;you're authenticated !!!! &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;JSON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stringify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+    
+    
+&lt;span class=&quot;nx&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;listen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PORT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8080&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+The logic is quiet simple.
+First, we need to create a session in express so that authenticated users can be recognized in subsequent calls. To that end, we use express-session. After the classic initialization of Passport by a call to initialize, we inject the returned middleware into our Express application. And then we finish the session management by “inserting” the session manager of Passport by a call to its session() method. All of this is clearly explained in the github pages of Passport.&lt;/p&gt;
+
+&lt;p&gt;Just before these initialization lines, you certainly noticed the use of an other middleware, bodyParser. Why ? it’ll become clear afterwards when we’ll reach the SAML response management.&lt;/p&gt;
+
+&lt;p&gt;redirectLogin is a middleware we create to check if the user is authenticated when he tries to reach some resources. Its role is to redirect to the login page if not.&lt;/p&gt;
+
+&lt;p&gt;serializeUser and deserializeUser are the means used by Passport to manipulate user information in the session. Here we simply decide to keep the profile returned itself.&lt;/p&gt;
+
+&lt;p&gt;The registration of our Passport Strategyy is classic. Let’s explain the configuration object.The ‘entryPoint’ is the URL of the identity provider, here our WSO2 IS SAML URL endpoint. Then the ‘issuer’ identifies us and allows mapping with the configuration of Service Provider we inserted previously in WSO2 IS. The callback provided serves to create a custom user object from the profile returned. After done method is executed, the user object is injected into the Express request object and is obtainable by request.user.&lt;/p&gt;
+
+&lt;p&gt;To redirect the login to WSO2 server, we insert the middleware of Passport as the uniq one of the /myapp/login URL mapping. The configuration is straightforward.&lt;/p&gt;
+
+&lt;p&gt;Here comes the second element we configure in our Service Provider section. The URL of our application that should be called with the assertion information about our user. These informations are posted so we use a POST configuration for this URL. And here comes into play the bodyParser. Its role is to read information from the body of this POST and make it available. Finally by the middleware added, we redirect to the main page of our application after success.&lt;/p&gt;
+
+&lt;p&gt;The main page of our application simply writes information about our user by getting the user object from request object.&lt;/p&gt;
+
+&lt;p&gt;How to get more information from our user ? Simply by adding claims in the WSO2 console and get these informations from the profile returned to inject it into our user object.&lt;/p&gt;
+
+&lt;p&gt;If you’re curious about the kind of response sent by WSO2 here is what I got :&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHNhbWwycDpSZXNwb25zZSBEZXN0aW5hdGlvbj0iaHR0cDovL2xvY2FsaG9zdDo4MDgwL215YXBwL3NhbWwiIElEPSJpZmNob2RjZ2Jka21lZm9naGJoaGFrbGtrbWhoZGxlaWFnZWVnaGRmIiBJblJlc3BvbnNlVG89Il9kMDNmODc4MDY3MmYzMjFhY2RkMiIgSXNzdWVJbnN0YW50PSIyMDE2LTA1LTE0VDE0OjM0OjQ2LjYwNloiIFZlcnNpb249IjIuMCIgeG1sbnM6c2FtbDJwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiPjxzYW1sMjpJc3N1ZXIgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6bmFtZWlkLWZvcm1hdDplbnRpdHkiIHhtbG5zOnNhbWwyPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIj5sb2NhbGhvc3Q8L3NhbWwyOklzc3Vlcj48c2FtbDJwOlN0YXR1cz48c2FtbDJwOlN0YXR1c0NvZGUgVmFsdWU9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpzdGF0dXM6U3VjY2VzcyIvPjwvc2FtbDJwOlN0YXR1cz48c2FtbDI6QXNzZXJ0aW9uIElEPSJub2pocGJvaW5nZnBwZ3BsYWNoZGpta2VrZmRkZW9tZG5qZGlvbGthIiBJc3N1ZUluc3RhbnQ9IjIwMTYtMDUtMTRUMTQ6MzQ6NDYuNjA2WiIgVmVyc2lvbj0iMi4wIiB4bWxuczpzYW1sMj0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFzc2VydGlvbiI+PHNhbWwyOklzc3VlciBGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpuYW1laWQtZm9ybWF0OmVudGl0eSI+bG9jYWxob3N0PC9zYW1sMjpJc3N1ZXI+PGRzOlNpZ25hdHVyZSB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyI+PGRzOlNpZ25lZEluZm8+PGRzOkNhbm9uaWNhbGl6YXRpb25NZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz48ZHM6U2lnbmF0dXJlTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI3JzYS1zaGExIi8+PGRzOlJlZmVyZW5jZSBVUkk9IiNub2pocGJvaW5nZnBwZ3BsYWNoZGpta2VrZmRkZW9tZG5qZGlvbGthIj48ZHM6VHJhbnNmb3Jtcz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI2VudmVsb3BlZC1zaWduYXR1cmUiLz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8xMC94bWwtZXhjLWMxNG4jIi8+PC9kczpUcmFuc2Zvcm1zPjxkczpEaWdlc3RNZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjc2hhMSIvPjxkczpEaWdlc3RWYWx1ZT5ORlhGWkZiN09IVHphN3EyQlJLVzdja3h2MlE9PC9kczpEaWdlc3RWYWx1ZT48L2RzOlJlZmVyZW5jZT48L2RzOlNpZ25lZEluZm8+PGRzOlNpZ25hdHVyZVZhbHVlPlh4M3VXY0QrMUptZ2k0NFFNWW96TEFROEYwb0Q0UmFlVWpXK2RRZWRibDZTSGFvMDhFd1pDZmN1ekRMdDR1U3BxSXlLeGNLbkdRYkFRZ1gwWnNEb0sva3hkZy9KNk9yWEV4bzJpcm53MVE5RUVyMWdSajVNa3Zad1g0REFGdW9LZldMeUN4dGRWWGhtNW1EYXI4Yk13Znd2cEsxdXc1VjRoWkF1MktublpNYz08L2RzOlNpZ25hdHVyZVZhbHVlPjxkczpLZXlJbmZvPjxkczpYNTA5RGF0YT48ZHM6WDUwOUNlcnRpZmljYXRlPk1JSUNOVENDQVo2Z0F3SUJBZ0lFUzM0M2dqQU5CZ2txaGtpRzl3MEJBUVVGQURCVk1Rc3dDUVlEVlFRR0V3SlZVekVMTUFrR0ExVUVDQXdDUTBFeEZqQVVCZ05WQkFjTURVMXZkVzUwWVdsdUlGWnBaWGN4RFRBTEJnTlZCQW9NQkZkVFR6SXhFakFRQmdOVkJBTU1DV3h2WTJGc2FHOXpkREFlRncweE1EQXlNVGt3TnpBeU1qWmFGdzB6TlRBeU1UTXdOekF5TWpaYU1GVXhDekFKQmdOVkJBWVRBbFZUTVFzd0NRWURWUVFJREFKRFFURVdNQlFHQTFVRUJ3d05UVzkxYm5SaGFXNGdWbWxsZHpFTk1Bc0dBMVVFQ2d3RVYxTlBNakVTTUJBR0ExVUVBd3dKYkc5allXeG9iM04wTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FDVXAvb1YxdldjOC9Ua1FTaUF2VG91c016T000YXNCMmlsdHIyUUtvem5pNWFWRnU4MThNcE9MWklyOExNblR6V2xsSnZ2YUE1UkFBZHBiRUNiKzQ4RmpiQmUwaHNlVWRONUhwd3ZuSC9EVzhaY2NHdms1M0k2T3JxN2hMQ3YxWkh0dU9Db2tnaHovQVRyaHlQcStRa3RNZlhuUlM0SHJLR0pUenhhQ2NVN09RSURBUUFCb3hJd0VEQU9CZ05WSFE4QkFmOEVCQU1DQlBBd0RRWUpLb1pJaHZjTkFRRUZCUUFEZ1lFQVc1d1BSN2NyMUxBZHErSXJSNDRpUWxSRzVJVENaWFk5aEkwUHlnTFAyckhBTmgrUFlmVG14YnVPbnlrTkd5aE02RmpGTGJXMnVaSFFUWTFqTXJQcHJqT3JteUs1c2pKUk80ZDFEZUdIVC9ZbklqczlKb2dSS3Y0WEhFQ3dMdElWZEFiSWRXSEV0VlpKeU1Ta3RjeXlzRmN2dWhQUUs4UWMvRS9XcTh1SFNDbz08L2RzOlg1MDlDZXJ0aWZpY2F0ZT48L2RzOlg1MDlEYXRhPjwvZHM6S2V5SW5mbz48L2RzOlNpZ25hdHVyZT48c2FtbDI6U3ViamVjdD48c2FtbDI6TmFtZUlEIEZvcm1hdD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6MS4xOm5hbWVpZC1mb3JtYXQ6ZW1haWxBZGRyZXNzIj5tZUBmYWkuY29tPC9zYW1sMjpOYW1lSUQ+PHNhbWwyOlN1YmplY3RDb25maXJtYXRpb24gTWV0aG9kPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6Y206YmVhcmVyIj48c2FtbDI6U3ViamVjdENvbmZpcm1hdGlvbkRhdGEgSW5SZXNwb25zZVRvPSJfZDAzZjg3ODA2NzJmMzIxYWNkZDIiIE5vdE9uT3JBZnRlcj0iMjAxNi0wNS0xNFQxNDozOTo0Ni42MDZaIiBSZWNpcGllbnQ9Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9teWFwcC9zYW1sIi8+PC9zYW1sMjpTdWJqZWN0Q29uZmlybWF0aW9uPjwvc2FtbDI6U3ViamVjdD48c2FtbDI6Q29uZGl0aW9ucyBOb3RCZWZvcmU9IjIwMTYtMDUtMTRUMTQ6MzQ6NDYuNjA2WiIgTm90T25PckFmdGVyPSIyMDE2LTA1LTE0VDE0OjM5OjQ2LjYwNloiPjxzYW1sMjpBdWRpZW5jZVJlc3RyaWN0aW9uPjxzYW1sMjpBdWRpZW5jZT5NeUFwcEV4cHJlc3M8L3NhbWwyOkF1ZGllbmNlPjwvc2FtbDI6QXVkaWVuY2VSZXN0cmljdGlvbj48L3NhbWwyOkNvbmRpdGlvbnM+PHNhbWwyOkF1dGhuU3RhdGVtZW50IEF1dGhuSW5zdGFudD0iMjAxNi0wNS0xNFQxNDozNDo0Ni42MDhaIj48c2FtbDI6QXV0aG5Db250ZXh0PjxzYW1sMjpBdXRobkNvbnRleHRDbGFzc1JlZj51cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YWM6Y2xhc3NlczpQYXNzd29yZDwvc2FtbDI6QXV0aG5Db250ZXh0Q2xhc3NSZWY+PC9zYW1sMjpBdXRobkNvbnRleHQ+PC9zYW1sMjpBdXRoblN0YXRlbWVudD48L3NhbWwyOkFzc2VydGlvbj48L3NhbWwycDpSZXNwb25zZT4=
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;
+Yes, it’s Base 64 encoded, so decode it and you’ll get something like :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2p:Response&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Destination=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://localhost:8080/myapp/saml&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ID=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ifchodcgbdkmefoghbhhaklkkmhhdleiageeghdf&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;InResponseTo=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;_d03f8780672f321acdd2&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;IssueInstant=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:34:46.606Z&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2.0&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:saml2p=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Issuer&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Format=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:entity&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:saml2=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;localhost&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Issuer&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2p:Status&amp;gt;&amp;lt;saml2p:StatusCode&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:status:Success&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&amp;lt;/saml2p:Status&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Assertion&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;ID=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nojhpboingfppgplachdjmkekfddeomdnjdiolka&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;IssueInstant=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:34:46.606Z&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Version=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2.0&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:saml2=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:assertion&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Issuer&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Format=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:nameid-format:entity&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;localhost&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Issuer&amp;gt;&amp;lt;ds:Signature&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;xmlns:ds=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2000/09/xmldsig#&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:SignedInfo&amp;gt;&amp;lt;ds:CanonicalizationMethod&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Algorithm=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:SignatureMethod&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Algorithm=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2000/09/xmldsig#rsa-sha1&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:Reference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;URI=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;#nojhpboingfppgplachdjmkekfddeomdnjdiolka&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;ds:Transforms&amp;gt;&amp;lt;ds:Transform&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Algorithm=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2000/09/xmldsig#enveloped-signature&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:Transform&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Algorithm=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:Transforms&amp;gt;&amp;lt;ds:DigestMethod&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Algorithm=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://www.w3.org/2000/09/xmldsig#sha1&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:DigestValue&amp;gt;&lt;/span&gt;NFXFZFb7OHTza7q2BRKW7ckxv2Q=&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:DigestValue&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:Reference&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:SignedInfo&amp;gt;&amp;lt;ds:SignatureValue&amp;gt;&lt;/span&gt;Xx3uWcD+1Jmgi44QMYozLAQ8F0oD4RaeUjW+dQedbl6SHao08EwZCfcuzDLt4uSpqIyKxcKnGQbAQgX0ZsDoK/kxdg/J6OrXExo2irnw1Q9EEr1gRj5MkvZwX4DAFuoKfWLyCxtdVXhm5mDar8bMwfwvpK1uw5V4hZAu2KnnZMc=&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:SignatureValue&amp;gt;&amp;lt;ds:KeyInfo&amp;gt;&amp;lt;ds:X509Data&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;ds:X509Certificate&amp;gt;&lt;/span&gt;MIICNTCCAZ6gAwIBAgIES343gjANBgkqhkiG9w0BAQUFADBVMQswCQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxDTALBgNVBAoMBFdTTzIxEjAQBgNVBAMMCWxvY2FsaG9zdDAeFw0xMDAyMTkwNzAyMjZaFw0zNTAyMTMwNzAyMjZaMFUxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzENMAsGA1UECgwEV1NPMjESMBAGA1UEAwwJbG9jYWxob3N0MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzOM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXnRS4HrKGJTzxaCcU7OQIDAQABoxIwEDAOBgNVHQ8BAf8EBAMCBPAwDQYJKoZIhvcNAQEFBQADgYEAW5wPR7cr1LAdq+IrR44iQlRG5ITCZXY9hI0PygLP2rHANh+PYfTmxbuOnykNGyhM6FjFLbW2uZHQTY1jMrPprjOrmyK5sjJRO4d1DeGHT/YnIjs9JogRKv4XHECwLtIVdAbIdWHEtVZJyMSktcyysFcvuhPQK8Qc/E/Wq8uHSCo=&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:X509Certificate&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:X509Data&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:KeyInfo&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ds:Signature&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Subject&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:NameID&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Format=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;me@fai.com&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:NameID&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:SubjectConfirmation&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Method=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;urn:oasis:names:tc:SAML:2.0:cm:bearer&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:SubjectConfirmationData&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;InResponseTo=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;_d03f8780672f321acdd2&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;NotOnOrAfter=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:39:46.606Z&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Recipient=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://localhost:8080/myapp/saml&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:SubjectConfirmation&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Subject&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Conditions&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;NotBefore=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:34:46.606Z&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;NotOnOrAfter=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:39:46.606Z&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;saml2:AudienceRestriction&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:Audience&amp;gt;&lt;/span&gt;MyAppExpress&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Audience&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:AudienceRestriction&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Conditions&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:AuthnStatement&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;AuthnInstant=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;2016-05-14T14:34:46.608Z&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;saml2:AuthnContext&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;saml2:AuthnContextClassRef&amp;gt;&lt;/span&gt;urn:oasis:names:tc:SAML:2.0:ac:classes:Password&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:AuthnContextClassRef&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:AuthnContext&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:AuthnStatement&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2:Assertion&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/saml2p:Response&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 14 May 2016 00:00:00 +0200</pubDate>
+        <link>http://localhost:4000/posts/passport-express-wso2</link>
+        <guid isPermaLink="true">http://localhost:4000/posts/passport-express-wso2</guid>
+        
+        <category>SAML</category>
+        
+        <category>Authentication</category>
+        
+        <category>WSO2</category>
+        
+        <category>LDAP</category>
+        
+        <category>Passport</category>
+        
+        <category>Express</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

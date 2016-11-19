@@ -1,0 +1,23 @@
+<div id="title">
+  <h1>
+    {% unless site.git == "" %}
+		  <a id="git-ic" href="{{site.git}}"><i class="fa fa-github"></i></a>	
+    {% endunless %}
+
+    {% unless site.linkedin == "" %}
+      <a id="so-ic" href="{{site.linkedin}}"><i class="fa fa-linkedin"></i></a>
+    {% endunless %}
+
+		
+    <a id="sitename" href="{{site.baseurl}}">imatmati.github.io</a>
+  </h1>
+
+  <!-- Add something about you in p tag-->
+  <p>Because technics matters ...</p>
+  <hr/>
+  
+  {% include nav-links.html %} 
+	 
+</div>
+
+
