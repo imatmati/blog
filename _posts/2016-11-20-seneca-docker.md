@@ -256,7 +256,9 @@ the answer contains all the services
 {"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
-{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
+{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0
+
+.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
 {"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"}]}
@@ -265,3 +267,148 @@ the answer contains all the services
 Here appears the reason to double the pin of services : to make it appear in the network service as well as in the direct callable port.
 For example, you obtain "pin":"role:users,cmd:check","port":5000 for the "callable" part and "role:users,cmd:check","port":59982 for the "hidden" but known service in our network. If you delete any one the pin option, you only receive a not very expressive "pin":"null:true". 
 And you've got the same information twice because two nodes are in our network and each one provides its information.
+
+# Docker
+
+I won't waste to present Docker. What I try here is to show you an introduction to how a docker microservices network could be built.
+
+### Get user
+
+The first service will serve as a base and be attributed to its own container.
+This is its Dockerfile.
+
+{% highlight text %} 
+FROM ubuntu:14.04
+MAINTAINER ivan matmati
+EXPOSE 39999
+ENV PATH /opt/node/bin:$PATH
+ADD node /opt/node
+WORKDIR /logi/getuserservice
+RUN apt-get update
+RUN apt-get -y install python
+RUN apt-get -y install gcc
+RUN apt-get -y install make
+RUN apt-get -y install g++
+ADD package.json index.js MOCK_DATA.json ./
+RUN /opt/node/bin/npm install
+CMD /opt/node/bin/node index.js 
+{% endhighlight %}
+
+I choose ubuntu 14.04 only because it's my current system. For the base to be able to communicate with exterior, I expose the default port 39999.
+To use the latest version of node, I had to provide it myself as a directory in the project directory and copy it into /opt/node. I also created a special directory for my service /logi/getuserservice and copy all necessary artefacts : package.json index.js and MOCK_DATA.json
+
+The version of code I used for the service in index.js is 
+{% highlight javascript %} 
+var seneca = require ("seneca")();
+
+var data = require ("./MOCK_DATA.json");
+seneca.add("role:users,cmd:get", function(msg, respond) {
+
+	var user = data.filter(function(usr) { return usr.id == msg.id});
+	var error =null;
+	if (user.length === 0 ) {
+		error = Error ("user not found");
+	}
+	else{
+		user = user[0]
+	}
+		
+	respond(error, {"user" : user})
+}).use('mesh',{isbase:true,"pin":"role:users,cmd:get"})
+{% endhighlight %}
+
+My package.json is dedicated to seneca
+
+{% highlight text %}
+{
+  "name": "ws1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "seneca": "^3.2.2",
+    "seneca-balance-client": "^0.6.0",
+    "seneca-mesh": "^0.9.0"
+  }
+}
+{% endhighlight %}
+
+Let's build it. My project for this sole service resides in the directory ws1. So from its parent, I issue
+
+{% highlight text %}
+$ docker build -t users:get ws1/
+{% endhighlight %}
+
+And then run it with 
+{% highlight text %}
+$ docker run -ti --network=host --name GetUserService  users:get
+{% endhighlight %}
+
+Notice that I use the most direct network configuration, this is not a good example for production.
+
+### Check user
+
+The Dockerfile
+
+
+{% highlight text %}
+FROM ubuntu:14.04
+MAINTAINER ivan matmati
+EXPOSE 5000
+ENV PATH /opt/node/bin:$PATH
+ADD node /opt/node
+WORKDIR /logi/checkuserservice
+RUN apt-get update
+RUN apt-get -y install python
+RUN apt-get -y install gcc
+RUN apt-get -y install make
+RUN apt-get -y install g++
+ADD package.json index.js ./
+RUN /opt/node/bin/npm install
+CMD /opt/node/bin/node index.js
+{% endhighlight %}
+
+It's almost the same. The only noticeable difference is that I expose the port 5000 to call directly my service.
+
+The code for index.js
+
+{% highlight javascript%}
+var seneca = require ("seneca")();
+
+seneca.add("role:users,cmd:check", function (msg, respond) {
+
+	//First get the user
+	seneca.act({"role":"users","cmd":"get", "id":msg.id}, function (err, response) {
+
+		if (err) return console.log (err)
+
+			// Do check
+			// ........
+			response.user.checked=true;
+			respond(null,response)
+		})
+
+}).use('mesh',{pin:"role:users,cmd:check"}).listen({port : 5000,pin:"role:users,cmd:check"})
+{% endhighlight %}
+
+Use the same package.json from above.
+Now, let's build it and run it. The ws2 directory is my working space for this service.
+
+{% highlight text %}
+$ docker build -t users:check ws2/
+$ docker run -ti --network=host --name CheckUserService users:check
+{% endhighlight %}
+
+Now test it by 
+{% highlight text %}
+$ curl -d '{"role":"users","cmd":"check","id":3}' http://127.0.0.1:5000/act
+{% endhighlight %}
+
+You should get the answer.
+
+# Conclusion

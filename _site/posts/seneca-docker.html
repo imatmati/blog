@@ -308,7 +308,9 @@ $ curl -d '{"role":"mesh","get":"members"}' http://127.0.0.1:6000/act</code></pr
 {"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
-{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
+{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0
+
+.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
 {"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
 {"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"}]}</code></pre></figure>
@@ -316,6 +318,137 @@ $ curl -d '{"role":"mesh","get":"members"}' http://127.0.0.1:6000/act</code></pr
 <p>Here appears the reason to double the pin of services : to make it appear in the network service as well as in the direct callable port.
 For example, you obtain “pin”:”role:users,cmd:check”,”port”:5000 for the “callable” part and “role:users,cmd:check”,”port”:59982 for the “hidden” but known service in our network. If you delete any one the pin option, you only receive a not very expressive “pin”:”null:true”. 
 And you’ve got the same information twice because two nodes are in our network and each one provides its information.</p>
+
+<h1 id="docker">Docker</h1>
+
+<p>I won’t waste to present Docker. What I try here is to show you an introduction to how a docker microservices network could be built.</p>
+
+<h3 id="get-user">Get user</h3>
+
+<p>The first service will serve as a base and be attributed to its own container.
+This is its Dockerfile.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> 
+FROM ubuntu:14.04
+MAINTAINER ivan matmati
+EXPOSE 39999
+ENV PATH /opt/node/bin:$PATH
+ADD node /opt/node
+WORKDIR /logi/getuserservice
+RUN apt-get update
+RUN apt-get -y install python
+RUN apt-get -y install gcc
+RUN apt-get -y install make
+RUN apt-get -y install g++
+ADD package.json index.js MOCK_DATA.json ./
+RUN /opt/node/bin/npm install
+CMD /opt/node/bin/node index.js </code></pre></figure>
+
+<p>I choose ubuntu 14.04 only because it’s my current system. For the base to be able to communicate with exterior, I expose the default port 39999.
+To use the latest version of node, I had to provide it myself as a directory in the project directory and copy it into /opt/node. I also created a special directory for my service /logi/getuserservice and copy all necessary artefacts : package.json index.js and MOCK_DATA.json</p>
+
+<p>The version of code I used for the service in index.js is</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"> 
+<span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"./MOCK_DATA.json"</span><span class="p">);</span>
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:get"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">usr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span><span class="kc">null</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">error</span> <span class="o">=</span> <span class="nb">Error</span> <span class="p">(</span><span class="s2">"user not found"</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">else</span><span class="p">{</span>
+		<span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+		
+	<span class="nx">respond</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user"</span> <span class="p">:</span> <span class="nx">user</span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="na">isbase</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"pin"</span><span class="p">:</span><span class="s2">"role:users,cmd:get"</span><span class="p">})</span></code></pre></figure>
+
+<p>My package.json is dedicated to seneca</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">{
+  "name": "ws1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "seneca": "^3.2.2",
+    "seneca-balance-client": "^0.6.0",
+    "seneca-mesh": "^0.9.0"
+  }
+}</code></pre></figure>
+
+<p>Let’s build it. My project for this sole service resides in the directory ws1. So from its parent, I issue</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker build -t users:get ws1/</code></pre></figure>
+
+<p>And then run it with</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker run -ti --network=host --name GetUserService  users:get</code></pre></figure>
+
+<p>Notice that I use the most direct network configuration, this is not a good example for production.</p>
+
+<h3 id="check-user">Check user</h3>
+
+<p>The Dockerfile</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">FROM ubuntu:14.04
+MAINTAINER ivan matmati
+EXPOSE 5000
+ENV PATH /opt/node/bin:$PATH
+ADD node /opt/node
+WORKDIR /logi/checkuserservice
+RUN apt-get update
+RUN apt-get -y install python
+RUN apt-get -y install gcc
+RUN apt-get -y install make
+RUN apt-get -y install g++
+ADD package.json index.js ./
+RUN /opt/node/bin/npm install
+CMD /opt/node/bin/node index.js</code></pre></figure>
+
+<p>It’s almost the same. The only noticeable difference is that I expose the port 5000 to call directly my service.</p>
+
+<p>The code for index.js</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:check"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="c1">//First get the user</span>
+	<span class="nx">seneca</span><span class="p">.</span><span class="nx">act</span><span class="p">({</span><span class="s2">"role"</span><span class="p">:</span><span class="s2">"users"</span><span class="p">,</span><span class="s2">"cmd"</span><span class="p">:</span><span class="s2">"get"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">:</span><span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+
+			<span class="c1">// Do check</span>
+			<span class="c1">// ........</span>
+			<span class="nx">response</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">checked</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span>
+			<span class="nx">respond</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">response</span><span class="p">)</span>
+		<span class="p">})</span>
+
+<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="na">pin</span><span class="p">:</span><span class="s2">"role:users,cmd:check"</span><span class="p">}).</span><span class="nx">listen</span><span class="p">({</span><span class="na">port</span> <span class="p">:</span> <span class="mi">5000</span><span class="p">,</span><span class="na">pin</span><span class="p">:</span><span class="s2">"role:users,cmd:check"</span><span class="p">})</span></code></pre></figure>
+
+<p>Use the same package.json from above.
+Now, let’s build it and run it. The ws2 directory is my working space for this service.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ docker build -t users:check ws2/
+$ docker run -ti --network=host --name CheckUserService users:check</code></pre></figure>
+
+<p>Now test it by</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ curl -d '{"role":"users","cmd":"check","id":3}' http://127.0.0.1:5000/act</code></pre></figure>
+
+<p>You should get the answer.</p>
+
+<h1 id="conclusion">Conclusion</h1>
 
 
 <div class="post-footer">
