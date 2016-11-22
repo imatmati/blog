@@ -1,0 +1,155 @@
+<p>Microservices are the new trend in composing applications with small and reusable pieces of logic accessible from any clients.But if services should be light and tiny as possible, what about their execution environment ? Can I expect to run hundreds of microservices each with their own and heavy application server ? If so, application server would demand much more resources than our little service, the ratio would be catastrophic. Is there a solution to run microservices on micro application servers and why not on micro os ? Yes, the solution is Seneca plus Docker.</p>
+
+<p>Think of it, why would you use microservices ?
+Here a few common reasons :</p>
+<ul>
+  <li>Composable services</li>
+  <li>Horizontal scalability</li>
+  <li>Logic isolation.</li>
+  <li>API management.</li>
+  <li>Heterogeneous clients.</li>
+</ul>
+
+<p>One of them is the most underestimated and the most technical : scalability.
+But how do you currently implement your microservice ? Did you really take scalability into consideration ? Or more probably you stuck to your good old technologies so often successful in the past.</p>
+
+<p>Let me present to you what may be your next try to address scalability in your development.</p>
+
+<h1 id="seneca">Seneca</h1>
+
+<blockquote>
+  <p>Seneca is a microservices toolkit for Node.js. 
+It helps you write clean, organized code that you can scale and deploy at any time.</p>
+</blockquote>
+
+<p>I took this presentation literally from their site, it’s a perfect fit. Maybe I’d add service discovery as a major feature worth being mentioned.</p>
+
+<p>Now, how would I code my first and simple microservice ?
+First, install Node.js if necessary and create your project in a directory of your choice by :</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm init</code></pre></figure>
+
+<p>Then install Seneca by :</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm install seneca --save</code></pre></figure>
+
+<p>To test our first service, get some fake users from <a href="https://www.mockaroo.com/">https://www.mockaroo.com/</a> and save them in json format in your project directory.</p>
+
+<p>Now comes our first microservice with seneca that serves users data. Copy the code in index.js</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"./MOCK_DATA.json"</span><span class="p">);</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:get"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">usr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span><span class="kc">null</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">error</span> <span class="o">=</span> <span class="nb">Error</span> <span class="p">(</span><span class="s2">"user not found"</span><span class="p">);</span>
+
+	<span class="p">}</span>
+	<span class="k">else</span><span class="p">{</span>
+		<span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+	
+	<span class="nx">respond</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user"</span> <span class="p">:</span> <span class="nx">user</span><span class="p">})</span>
+<span class="p">})</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">();</span></code></pre></figure>
+
+<p>What happens here ?
+First we create our seneca instance. It’s versatile and can serve to implement server and client as well.
+We’ll use it as a server to pass user data from our file of users.</p>
+
+<p>Seneca uses pattern matching to identify a service. And we litteraly add a service with … add function.
+First parameter is the pattern identifier of this service. This pattern matching is wonderful to classify our microservices and permits some form of overloading with a common part in identifiers and a distinguible one to route correctly to the target.</p>
+
+<p>Then the service logic is provided as a function.
+This function accepts a message argument with all arguments passed to the call of this web service.
+Respond is our “classical” callback with its first parameter to signal error and the second one to send data back to the client.</p>
+
+<p>Finally, we launch our service with “listen”. Seneca is able to listen with different transports protocols and ports.
+The default transport plugin provides HTTP and TCP protocols.
+But for all the examples, we’ll keep HTTP.
+By default, seneca server listens on port 10101 with HTTP protocol.</p>
+
+<p>What if you want to change the listening port number ?  Simple, just pass the option to listen function</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">({</span><span class="na">port</span><span class="p">:</span><span class="s2">"5000"</span><span class="p">});</span></code></pre></figure>
+
+<p>And if I want to listen from a specific network address ? Same way. Here a dummy example with localhost.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">({</span><span class="na">host</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="na">port</span><span class="p">:</span><span class="s2">"5000"</span><span class="p">});</span></code></pre></figure>
+
+<p>Ok, how can I call it ? 
+Two ways are offered, you can use Seneca client or any HTTP client.</p>
+
+<h3 id="http-client">HTTP client</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ curl -d '{"role":"users","cmd":"get","id":4}' http://127.0.0.1:5000/act
+{"user":[{"id":4,"first_name":"Anna","last_name":"Stephens","email":"astephens3@deviantart.com","gender":"Female","ip_address":"194.18.255.45"}]}</code></pre></figure>
+
+<p>Don’t forget the act path in your URL, it’s the marker of any client calls even from Seneca ones.</p>
+
+<h3 id="seneca-client">Seneca client</h3>
+<p>To demonstrate Seneca client, just execute the following codes respectively inside and outside index.js.</p>
+
+<ul>
+  <li>Inside the same file index.js</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">seneca.act("role:users,cmd:get,id:4", function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<ul>
+  <li>Outside in client.js we must specify the targeted service in the client call.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">var seneca = require ("seneca")();
+seneca.client({host:"127.0.0.1", port:5000}).act({"role":"users","cmd":"get","id":4}, function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<p>As seen above, you specify the pattern identifier of the service you want to call along with the data to transmit.
+An other way to write this part would be in JSON format.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">seneca.act({"role":"users","cmd":"get","id":4}, function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<p>Even if we’re not going to use it in our examples, note that you can export your service as an Express middleware to use it in your existing Express application.</p>
+
+<h3 id="service-discovery">Service discovery</h3>
+
+<p>Seneca provides a plugin for service discovery called ‘mesh’. And there shines the concept of pattern. Remember a service is identified by the pattern it takes in charge. Mesh permits to services to address each other thanks to this pattern regardless of current location of the endpoint.</p>
+
+<p>First, install the plugin in your project.</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm install seneca-balance-client
+$ npm install seneca-mesh</code></pre></figure>
+
+<p>Then our service discovery needs a node to be the entry point to join the network, it’s called the base. Notice that it will be used only once by a client joining the network. In any subsequent need for information about service location any node can answer the request. That means that if the base goes down, our cluster will still work with its actual members !</p>
+
+<p>I chose to implement a base within an actual service.Of course, you can decide to externalize a devoted instance for that matter.
+This is the code for the intermixed variation.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:check"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="c1">//First get the user</span>
+		<span class="nx">seneca</span><span class="p">.</span><span class="nx">act</span><span class="p">({</span><span class="s2">"role"</span><span class="p">:</span><span class="s2">"users"</span><span class="p">,</span><span class="s2">"cmd"</span><span class="p">:</span><span class="s2">"get"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">:</span><span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+
+			<span class="c1">// Do check</span>
+			<span class="c1">// ........</span>
+			<span class="nx">response</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">checked</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span>
+			<span class="nx">respond</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">response</span><span class="p">)</span>
+		<span class="p">})</span>
+
+	<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="na">pin</span><span class="p">:</span><span class="s2">"role:users,cmd:check"</span><span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">5000</span><span class="p">)</span></code></pre></figure>

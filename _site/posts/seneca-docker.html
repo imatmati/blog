@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/public/stylesheets/bs.css">
+    <link rel="stylesheet" href="/public/stylesheets/enhance/zoom.css">
+    <link rel="stylesheet" href="/public/stylesheets/enhance/classes.css">
+    <link rel="stylesheet" href="/public/stylesheets/styles.css">
+    <link rel="stylesheet" href="/public/stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="canonical" href="http://localhost:4000/posts/seneca-docker">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+      <link rel="icon" type="image/x-icon"  href="/favicon.ico" />
+    <title>Microservices with Seneca and Docker | imatmati-blog</title>
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+    <div class="wrapper">
+        <section>
+          <div id="title">
+  <h1>
+    
+		  <a id="git-ic" href="https://github.com/imatmati"><i class="fa fa-github"></i></a>	
+    
+
+    
+      <a id="so-ic" href="https://fr.linkedin.com/in/ivan-matmati-0a0277b0"><i class="fa fa-linkedin"></i></a>
+    
+
+		
+    <a id="sitename" href="">imatmati.github.io</a>
+  </h1>
+
+  <!-- Add something about you in p tag-->
+  <p>Because technics matters ...</p>
+  <hr/>
+  
+  <span class="credits left">
+  <a href="/blog">Blog</a> |
+  <a href="/archive">Archive</a> |
+  <a href="/about">About</a>
+</span>
+
+<span class="credits right">
+
+</span>
+ 
+	 
+</div>
+
+
+
+
+          <div class="post-title">
+    <h1>Microservices with Seneca and Docker</h1>
+    <p class="text-muted">20 Nov 2016 | <i class="fa fa-tag"></i>
+  
+  
+  <a class="text-muted" href="/tags/#Microservice">Microservice</a>,
+  
+  <a class="text-muted" href="/tags/#Seneca">Seneca</a>,
+  
+  <a class="text-muted" href="/tags/#Docker">Docker</a>
+  
+
+
+</p>
+
+</div>
+
+  <p>Microservices are the new trend in composing applications with small and reusable pieces of logic accessible from any clients.But if services should be light and tiny as possible, what about their execution environment ? Can I expect to run hundreds of microservices each with their own and heavy application server ? If so, application server would demand much more resources than our little service, the ratio would be catastrophic. Is there a solution to run microservices on micro application servers and why not on micro os ? Yes, the solution is Seneca plus Docker.</p>
+
+<p>Think of it, why would you use microservices ?
+Here a few common reasons :</p>
+<ul>
+  <li>Composable services</li>
+  <li>Horizontal scalability</li>
+  <li>Logic isolation.</li>
+  <li>API management.</li>
+  <li>Heterogeneous clients.</li>
+</ul>
+
+<p>One of them is the most underestimated and the most technical : scalability.
+But how do you currently implement your microservice ? Did you really take scalability into consideration ? Or more probably you stuck to your good old technologies so often successful in the past.</p>
+
+<p>Let me present to you what may be your next try to address scalability in your development.</p>
+
+<h1 id="seneca">Seneca</h1>
+
+<blockquote>
+  <p>Seneca is a microservices toolkit for Node.js. 
+It helps you write clean, organized code that you can scale and deploy at any time.</p>
+</blockquote>
+
+<p>I took this presentation literally from their site, it’s a perfect fit. Maybe I’d add service discovery as a major feature worth being mentioned.</p>
+
+<p>Now, how would I code my first and simple microservice ?
+First, install Node.js if necessary and create your project in a directory of your choice by :</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm init</code></pre></figure>
+
+<p>Then install Seneca by :</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm install seneca --save</code></pre></figure>
+
+<p>To test our first service, get some fake users from <a href="https://www.mockaroo.com/">https://www.mockaroo.com/</a> and save them in json format in your project directory.</p>
+
+<p>Now comes our first microservice with seneca that serves users data. Copy the code in index.js</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"./MOCK_DATA.json"</span><span class="p">);</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:get"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">usr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span><span class="kc">null</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">error</span> <span class="o">=</span> <span class="nb">Error</span> <span class="p">(</span><span class="s2">"user not found"</span><span class="p">);</span>
+
+	<span class="p">}</span>
+	<span class="k">else</span><span class="p">{</span>
+		<span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+	
+	<span class="nx">respond</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user"</span> <span class="p">:</span> <span class="nx">user</span><span class="p">})</span>
+<span class="p">})</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">();</span></code></pre></figure>
+
+<p>What happens here ?
+First we create our seneca instance. It’s versatile and can serve to implement server and client as well.
+We’ll use it as a server to pass user data from our file of users.</p>
+
+<p>Seneca uses pattern matching to identify a service. And we litteraly add a service with … add function.
+First parameter is the pattern identifier of this service. This pattern matching is wonderful to classify our microservices and permits some form of overloading with a common part in identifiers and a distinguible one to route correctly to the target.</p>
+
+<p>Then the service logic is provided as a function.
+This function accepts a message argument with all arguments passed to the call of this web service.
+Respond is our “classical” callback with its first parameter to signal error and the second one to send data back to the client.</p>
+
+<p>Finally, we launch our service with “listen”. Seneca is able to listen with different transports protocols and ports.
+The default transport plugin provides HTTP and TCP protocols.
+But for all the examples, we’ll keep HTTP.
+By default, seneca server listens on port 10101 with HTTP protocol.</p>
+
+<p>What if you want to change the listening port number ?  Simple, just pass the option to listen function</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">({</span><span class="na">port</span><span class="p">:</span><span class="s2">"5000"</span><span class="p">});</span></code></pre></figure>
+
+<p>And if I want to listen from a specific network address ? Same way. Here a dummy example with localhost.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">seneca</span><span class="p">.</span><span class="nx">listen</span><span class="p">({</span><span class="na">host</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="na">port</span><span class="p">:</span><span class="s2">"5000"</span><span class="p">});</span></code></pre></figure>
+
+<p>Ok, how can I call it ? 
+Two ways are offered, you can use Seneca client or any HTTP client.</p>
+
+<h3 id="http-client">HTTP client</h3>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">$ curl -d '{"role":"users","cmd":"get","id":4}' http://127.0.0.1:5000/act
+{"user":[{"id":4,"first_name":"Anna","last_name":"Stephens","email":"astephens3@deviantart.com","gender":"Female","ip_address":"194.18.255.45"}]}</code></pre></figure>
+
+<p>Don’t forget the act path in your URL, it’s the marker of any client calls even from Seneca ones.</p>
+
+<h3 id="seneca-client">Seneca client</h3>
+<p>To demonstrate Seneca client, just execute the following codes respectively inside and outside index.js.</p>
+
+<ul>
+  <li>Inside the same file index.js</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">seneca.act("role:users,cmd:get,id:4", function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<ul>
+  <li>Outside in client.js we must specify the targeted service in the client call.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">var seneca = require ("seneca")();
+seneca.client({host:"127.0.0.1", port:5000}).act({"role":"users","cmd":"get","id":4}, function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<p>As seen above, you specify the pattern identifier of the service you want to call along with the data to transmit.
+An other way to write this part would be in JSON format.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">seneca.act({"role":"users","cmd":"get","id":4}, function (err,response) {
+	if (err) return console.log (err.msg);
+	console.log (response);
+})</code></pre></figure>
+
+<p>Even if we’re not going to use it in our examples, note that you can export your service as an Express middleware to use it in your existing Express application.</p>
+
+<h3 id="service-discovery">Service discovery</h3>
+
+<p>Seneca provides a plugin for service discovery called ‘mesh’. And there shines the concept of pattern. Remember a service is identified by the pattern it takes in charge. Mesh permits to services to address each other thanks to this pattern regardless of current location of the endpoint.</p>
+
+<p>First, install the plugin in your project.</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command">$ npm install seneca-balance-client
+$ npm install seneca-mesh</code></pre></figure>
+
+<p>Then our service discovery needs a node to be the entry point to join the network, it’s called the base. Notice that it will be used only once by a client joining the network. In any subsequent need for information about service location any node can answer the request. That means that if the base goes down, our cluster will still work with its actual members !</p>
+
+<p>I chose to implement a base within an actual service.Of course, you can decide to externalize a devoted instance for that matter.
+If necessary you can simply create a base with a single line of code</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command"> 
+$ node -e 'require("seneca")().use("mesh",{isbase:true})'</code></pre></figure>
+
+<p>This is the code for the intermixed variation.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"./MOCK_DATA.json"</span><span class="p">);</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:get"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">usr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span><span class="kc">null</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">error</span> <span class="o">=</span> <span class="nb">Error</span> <span class="p">(</span><span class="s2">"user not found"</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">else</span><span class="p">{</span>
+		<span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+		
+	<span class="nx">respond</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user"</span> <span class="p">:</span> <span class="nx">user</span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="na">isbase</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="s2">"pin"</span><span class="p">:</span><span class="s2">"role:users,cmd:get"</span><span class="p">})</span></code></pre></figure>
+
+<p>New things happen here. We use the plugin ‘mesh’ and make our service a base for our network of services with isbase:true option.
+We notify the (future) members that we publish a service identified by “role:users,cmd:get”. Pay attention to the fact, we don’t listen to a port.
+So our service is only discoverable by others members of the network but not directly addressable.
+If we aim to be able to address it in a direct call we should have built a base outside and make a listen call as follow</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"> 
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:get"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">usr</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">usr</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">error</span> <span class="o">=</span><span class="kc">null</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">error</span> <span class="o">=</span> <span class="nb">Error</span> <span class="p">(</span><span class="s2">"user not found"</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="k">else</span><span class="p">{</span>
+		<span class="nx">user</span> <span class="o">=</span> <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+	
+	<span class="nx">respond</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user"</span> <span class="p">:</span> <span class="nx">user</span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="s2">"pin"</span><span class="p">:</span><span class="s2">"role:users,cmd:get"</span><span class="p">}).</span><span class="nx">listen</span><span class="p">({</span><span class="na">port</span><span class="p">:</span><span class="mi">6000</span><span class="p">,</span><span class="s2">"pin"</span><span class="p">:</span><span class="s2">"role:users,cmd:get"</span><span class="p">})</span></code></pre></figure>
+
+<p>Why do I double the pin option ? It’ll become clear in a moment.</p>
+
+<p>Now, the client service</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"> 
+<span class="kd">var</span> <span class="nx">seneca</span> <span class="o">=</span> <span class="nx">require</span> <span class="p">(</span><span class="s2">"seneca"</span><span class="p">)();</span>
+
+<span class="nx">seneca</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">"role:users,cmd:check"</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">respond</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="c1">//First get the user</span>
+	<span class="nx">seneca</span><span class="p">.</span><span class="nx">act</span><span class="p">({</span><span class="s2">"role"</span><span class="p">:</span><span class="s2">"users"</span><span class="p">,</span><span class="s2">"cmd"</span><span class="p">:</span><span class="s2">"get"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">:</span><span class="nx">msg</span><span class="p">.</span><span class="nx">id</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+
+			<span class="c1">// Do check</span>
+			<span class="c1">// ........</span>
+			<span class="nx">response</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">checked</span><span class="o">=</span><span class="kc">true</span><span class="p">;</span>
+			<span class="nx">respond</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="nx">response</span><span class="p">)</span>
+		<span class="p">})</span>
+
+<span class="p">}).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'mesh'</span><span class="p">,{</span><span class="na">pin</span><span class="p">:</span><span class="s2">"role:users,cmd:check"</span><span class="p">}).</span><span class="nx">listen</span><span class="p">({</span><span class="na">port</span> <span class="p">:</span> <span class="mi">5000</span><span class="p">,</span><span class="na">pin</span><span class="p">:</span><span class="s2">"role:users,cmd:check"</span><span class="p">})</span></code></pre></figure>
+
+<p>The service identified by “role:users,cmd:check” will make a call to an other service identified by “role”:”users”,”cmd”:”get”.
+Note that no address is given here, only the identifier. We indicate our pattern to identify the service as on option to the mesh plugin.
+To make it callable, we listen on port 5000.</p>
+
+<p>Launch the two services with node and issue a call by</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command"> 
+$ curl -d '{"role":"users","cmd":"check","id":3}' http://127.0.0.1:5000/act</code></pre></figure>
+
+<p>The answer</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command"> 
+{"user":{"id":3,"first_name":"Ralph","last_name":"Riley","email":"rriley2@cdbaby.com","gender":"Male","ip_address":"239.75.131.248","checked":true}}</code></pre></figure>
+
+<p>Of course the response will differ according to you generated test data.</p>
+
+<p>How do we know what services are exposed in a network ?
+Fairly simple, call this on any service of the network.</p>
+
+<figure class="highlight"><pre><code class="language-command" data-lang="command"> 
+$ curl -d '{"role":"mesh","get":"members"}' http://127.0.0.1:6000/act</code></pre></figure>
+
+<p>the answer contains all the services</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text"> 
+{"list":[
+{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
+{"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
+{"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
+{"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
+{"pin":"role:users,cmd:get","port":6000,"host":"0.0.0.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
+{"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
+{"pin":"role:users,cmd:check","port":5000,"host":"0.0.0.0","type":"web","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"},
+{"pin":"role:users,cmd:check","port":59982,"host":"0.0.0.0","type":"web","model":"actor","instance":"682daw0mery3/1479846059980/7141/3.2.2/-"}]}</code></pre></figure>
+
+<p>Here appears the reason to double the pin of services : to make it appear in the network service as well as in the direct callable port.
+For example, you obtain “pin”:”role:users,cmd:check”,”port”:5000 for the “callable” part and “role:users,cmd:check”,”port”:59982 for the “hidden” but known service in our network. If you delete any one the pin option, you only receive a not very expressive “pin”:”null:true”. 
+And you’ve got the same information twice because two nodes are in our network and each one provides its information.</p>
+
+
+<div class="post-footer">
+  
+</div>
+<hr/>
+
+
+  
+    <div class="post-navs row">
+      
+        <div class="col-md-6 post-nav">
+
+          <h3 class="section-header">
+            Older
+            <span class="text-muted"> &middot; </span>
+            <a href="/archive">View Archive (2)</a>
+          </h3>
+
+          <h2 class="post-title-link"><a href="/posts/passport-express-wso2">SAML Authentication with WSO2 / LDAP / PASSPORT / EXPRESS</a></h2>
+          <p>Authentication with standard protocols is often a daunting task for most people. SAML, OAuth2, etc. seem cumbersome and too difficult to integrate in an application. What’s more, their roles and limits are fuzzy to a lot of developpers. Let’s try to demystify this natural functionnality in any web application. In this tutorial, we’ll use SAML2 with WSO2 Identity Server connected to a LDAP server as a users store. The application will be implemented with Express / Passport.</p>
+
+
+        </div>
+      
+      
+    </div>
+  
+
+
+
+          <footer>
+<hr/>
+  <div class="left">  
+    &copy;2016.
+    Built with <a href="http://jekyllrb.com/">Jekyll</a> and
+    <a href="https://github.com/railsr/autm-rb">Autm-rb</a>
+  </div>
+
+  <div class="right">
+    
+      <a href=""><i class="fa fa-twitter fa-lg" style="color:#49B1F7;"></i></a>
+    </a>
+    
+  </div>
+</footer>
+
+        </section>
+    </div>
+    </div>
+    <script src="/public/javascripts/jquery.min.js"></script>
+    <script src="/public/javascripts/bootstrap.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/velocity/1.2.2/velocity.min.js"></script>
+    <script src="/public/javascripts/enhance.js"></script>
+   
+    <!-- Place your <script> tags here. -->
+
+<!-- disqus comment counter -->
+<script type="text/javascript">
+	/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'test';
+
+	/* * * DON'T EDIT BELOW THIS LINE * * */
+	(function () {
+	    var s = document.createElement('script'); s.async = true;
+	    s.type = 'text/javascript';
+	    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+	}());
+</script>
+<!-- /disqus comment counter -->
+		
+		
+		
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- /google analytics -->
+
+  </body>
+</html>
