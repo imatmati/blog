@@ -5,8 +5,8 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 22 Nov 2016 22:46:24 +0100</pubDate>
-    <lastBuildDate>Tue, 22 Nov 2016 22:46:24 +0100</lastBuildDate>
+    <pubDate>Wed, 23 Nov 2016 21:22:59 +0100</pubDate>
+    <lastBuildDate>Wed, 23 Nov 2016 21:22:59 +0100</lastBuildDate>
     <generator>Jekyll v3.3.0</generator>
     
       <item>
@@ -40,11 +40,11 @@ It helps you write clean, organized code that you can scale and deploy at any ti
 &lt;p&gt;Now, how would I code my first and simple microservice ?
 First, install Node.js if necessary and create your project in a directory of your choice by :&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt;$ npm init&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;npm init&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Then install Seneca by :&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt;$ npm install seneca --save&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;npm install seneca --save&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;To test our first service, get some fake users from &lt;a href=&quot;https://www.mockaroo.com/&quot;&gt;https://www.mockaroo.com/&lt;/a&gt; and save them in json format in your project directory.&lt;/p&gt;
 
@@ -99,8 +99,8 @@ Two ways are offered, you can use Seneca client or any HTTP client.&lt;/p&gt;
 
 &lt;h3 id=&quot;http-client&quot;&gt;HTTP client&lt;/h3&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ curl -d '{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;get&quot;,&quot;id&quot;:4}' http://127.0.0.1:5000/act
-{&quot;user&quot;:[{&quot;id&quot;:4,&quot;first_name&quot;:&quot;Anna&quot;,&quot;last_name&quot;:&quot;Stephens&quot;,&quot;email&quot;:&quot;astephens3@deviantart.com&quot;,&quot;gender&quot;:&quot;Female&quot;,&quot;ip_address&quot;:&quot;194.18.255.45&quot;}]}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;curl -d &lt;span class=&quot;s1&quot;&gt;'{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;get&quot;,&quot;id&quot;:4}'&lt;/span&gt; http://127.0.0.1:5000/act
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;user&quot;&lt;/span&gt;:[&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;:4,&lt;span class=&quot;s2&quot;&gt;&quot;first_name&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Anna&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;last_name&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Stephens&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;email&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;astephens3@deviantart.com&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;gender&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Female&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;ip_address&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;194.18.255.45&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}]}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Don’t forget the act path in your URL, it’s the marker of any client calls even from Seneca ones.&lt;/p&gt;
 
@@ -111,28 +111,28 @@ Two ways are offered, you can use Seneca client or any HTTP client.&lt;/p&gt;
   &lt;li&gt;Inside the same file index.js&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;seneca.act(&quot;role:users,cmd:get,id:4&quot;, function (err,response) {
-	if (err) return console.log (err.msg);
-	console.log (response);
-})&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;seneca&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;act&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:get,id:4&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Outside in client.js we must specify the targeted service in the client call.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;var seneca = require (&quot;seneca&quot;)();
-seneca.client({host:&quot;127.0.0.1&quot;, port:5000}).act({&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;get&quot;,&quot;id&quot;:4}, function (err,response) {
-	if (err) return console.log (err.msg);
-	console.log (response);
-})&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;seneca&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;seneca&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)();&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;seneca&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;127.0.0.1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;act&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;role&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;users&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;cmd&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;get&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;As seen above, you specify the pattern identifier of the service you want to call along with the data to transmit.
 An other way to write this part would be in JSON format.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;seneca.act({&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;get&quot;,&quot;id&quot;:4}, function (err,response) {
-	if (err) return console.log (err.msg);
-	console.log (response);
-})&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;seneca&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;act&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;role&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;users&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;cmd&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;get&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Even if we’re not going to use it in our examples, note that you can export your service as an Express middleware to use it in your existing Express application.&lt;/p&gt;
 
@@ -142,16 +142,16 @@ An other way to write this part would be in JSON format.&lt;/p&gt;
 
 &lt;p&gt;First, install the plugin in your project.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt;$ npm install seneca-balance-client
-$ npm install seneca-mesh&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;npm install seneca-balance-client
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;npm install seneca-mesh&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Then our service discovery needs a node to be the entry point to join the network, it’s called the base. Notice that it will be used only once by a client joining the network. In any subsequent need for information about service location any node can answer the request. That means that if the base goes down, our cluster will still work with its actual members !&lt;/p&gt;
 
 &lt;p&gt;I chose to implement a base within an actual service.Of course, you can decide to externalize a devoted instance for that matter.
 If necessary you can simply create a base with a single line of code&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt; 
-$ node -e 'require(&quot;seneca&quot;)().use(&quot;mesh&quot;,{isbase:true})'&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;node -e &lt;span class=&quot;s1&quot;&gt;'require(&quot;seneca&quot;)().use(&quot;mesh&quot;,{isbase:true})'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;This is the code for the intermixed variation.&lt;/p&gt;
 
@@ -220,36 +220,36 @@ To make it callable, we listen on port 5000.&lt;/p&gt;
 
 &lt;p&gt;Launch the two services with node and issue a call by&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt; 
-$ curl -d '{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;check&quot;,&quot;id&quot;:3}' http://127.0.0.1:5000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;curl -d &lt;span class=&quot;s1&quot;&gt;'{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;check&quot;,&quot;id&quot;:3}'&lt;/span&gt; http://127.0.0.1:5000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;The answer&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt; 
-{&quot;user&quot;:{&quot;id&quot;:3,&quot;first_name&quot;:&quot;Ralph&quot;,&quot;last_name&quot;:&quot;Riley&quot;,&quot;email&quot;:&quot;rriley2@cdbaby.com&quot;,&quot;gender&quot;:&quot;Male&quot;,&quot;ip_address&quot;:&quot;239.75.131.248&quot;,&quot;checked&quot;:true}}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;user&quot;&lt;/span&gt;:&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;:3,&lt;span class=&quot;s2&quot;&gt;&quot;first_name&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Ralph&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;last_name&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Riley&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;email&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;rriley2@cdbaby.com&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;gender&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Male&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;ip_address&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;239.75.131.248&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;checked&quot;&lt;/span&gt;:true&lt;span class=&quot;o&quot;&gt;}}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Of course the response will differ according to you generated test data.&lt;/p&gt;
 
 &lt;p&gt;How do we know what services are exposed in a network ?
 Fairly simple, call this on any service of the network.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-command&quot; data-lang=&quot;command&quot;&gt; 
-$ curl -d '{&quot;role&quot;:&quot;mesh&quot;,&quot;get&quot;:&quot;members&quot;}' http://127.0.0.1:6000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;curl -d &lt;span class=&quot;s1&quot;&gt;'{&quot;role&quot;:&quot;mesh&quot;,&quot;get&quot;:&quot;members&quot;}'&lt;/span&gt; http://127.0.0.1:6000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;the answer contains all the services&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt; 
-{&quot;list&quot;:[
-{&quot;pin&quot;:&quot;role:users,cmd:get&quot;,&quot;port&quot;:6000,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;instance&quot;:&quot;99ni7imqrbn1/1479846054979/7136/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:mesh,base:true&quot;,&quot;port&quot;:52631,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;model&quot;:&quot;actor&quot;,&quot;instance&quot;:&quot;hm32xs56zucx/1479845435857/6642/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:users,cmd:check&quot;,&quot;port&quot;:5000,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;instance&quot;:&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:users,cmd:check&quot;,&quot;port&quot;:59982,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;model&quot;:&quot;actor&quot;,&quot;instance&quot;:&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:users,cmd:get&quot;,&quot;port&quot;:6000,&quot;host&quot;:&quot;0.0.0
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;list&quot;&lt;/span&gt;:[
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:get&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:6000,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;99ni7imqrbn1/1479846054979/7136/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:mesh,base:true&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:52631,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;model&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;actor&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;hm32xs56zucx/1479845435857/6642/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:check&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:5000,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:check&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:59982,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;model&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;actor&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:get&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:6000,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0
 
-.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;instance&quot;:&quot;99ni7imqrbn1/1479846054979/7136/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:mesh,base:true&quot;,&quot;port&quot;:52631,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;model&quot;:&quot;actor&quot;,&quot;instance&quot;:&quot;hm32xs56zucx/1479845435857/6642/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:users,cmd:check&quot;,&quot;port&quot;:5000,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;instance&quot;:&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;},
-{&quot;pin&quot;:&quot;role:users,cmd:check&quot;,&quot;port&quot;:59982,&quot;host&quot;:&quot;0.0.0.0&quot;,&quot;type&quot;:&quot;web&quot;,&quot;model&quot;:&quot;actor&quot;,&quot;instance&quot;:&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;}]}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;99ni7imqrbn1/1479846054979/7136/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:mesh,base:true&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:52631,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;model&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;actor&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;hm32xs56zucx/1479845435857/6642/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:check&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:5000,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;pin&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;role:users,cmd:check&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;port&quot;&lt;/span&gt;:59982,&lt;span class=&quot;s2&quot;&gt;&quot;host&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;web&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;model&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;actor&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;682daw0mery3/1479846059980/7141/3.2.2/-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}]}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Here appears the reason to double the pin of services : to make it appear in the network service as well as in the direct callable port.
 For example, you obtain “pin”:”role:users,cmd:check”,”port”:5000 for the “callable” part and “role:users,cmd:check”,”port”:59982 for the “hidden” but known service in our network. If you delete any one the pin option, you only receive a not very expressive “pin”:”null:true”. 
@@ -264,11 +264,11 @@ And you’ve got the same information twice because two nodes are in our network
 &lt;p&gt;The first service will serve as a base and be attributed to its own container.
 This is its Dockerfile.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt; 
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt; 
 FROM ubuntu:14.04
 MAINTAINER ivan matmati
 EXPOSE 39999
-ENV PATH /opt/node/bin:$PATH
+ENV PATH /opt/node/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
 ADD node /opt/node
 WORKDIR /logi/getuserservice
 RUN apt-get update
@@ -305,41 +305,41 @@ To use the latest version of node, I had to provide it myself as a directory in 
 
 &lt;p&gt;My package.json is dedicated to seneca&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;{
-  &quot;name&quot;: &quot;ws1&quot;,
-  &quot;version&quot;: &quot;1.0.0&quot;,
-  &quot;description&quot;: &quot;&quot;,
-  &quot;main&quot;: &quot;index.js&quot;,
-  &quot;scripts&quot;: {
-    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;amp;&amp;amp; exit 1&quot;
-  },
-  &quot;author&quot;: &quot;&quot;,
-  &quot;license&quot;: &quot;ISC&quot;,
-  &quot;dependencies&quot;: {
-    &quot;seneca&quot;: &quot;^3.2.2&quot;,
-    &quot;seneca-balance-client&quot;: &quot;^0.6.0&quot;,
-    &quot;seneca-mesh&quot;: &quot;^0.9.0&quot;
-  }
-}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ws1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;index.js&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;echo \&quot;Error: no test specified\&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;dependencies&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;seneca&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^3.2.2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;seneca-balance-client&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^0.6.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&quot;seneca-mesh&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^0.9.0&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Let’s build it. My project for this sole service resides in the directory ws1. So from its parent, I issue&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker build -t users:get ws1/&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;docker build -t users:get ws1/&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;And then run it with&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker run -ti --network=host --name GetUserService  users:get&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;docker run -ti --network&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;host --name GetUserService  users:get&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;Notice that I use the most direct network configuration, this is not a good example for production.&lt;/p&gt;
+&lt;p&gt;Notice that I use the most direct network configuration, this is certainly not your choice for production.&lt;/p&gt;
 
 &lt;h3 id=&quot;check-user&quot;&gt;Check user&lt;/h3&gt;
 
 &lt;p&gt;The Dockerfile&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;FROM ubuntu:14.04
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;FROM ubuntu:14.04
 MAINTAINER ivan matmati
 EXPOSE 5000
-ENV PATH /opt/node/bin:$PATH
+ENV PATH /opt/node/bin:&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;
 ADD node /opt/node
 WORKDIR /logi/checkuserservice
 RUN apt-get update
@@ -375,16 +375,33 @@ CMD /opt/node/bin/node index.js&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;Use the same package.json from above.
 Now, let’s build it and run it. The ws2 directory is my working space for this service.&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ docker build -t users:check ws2/
-$ docker run -ti --network=host --name CheckUserService users:check&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;docker build -t users:check ws2/
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;docker run -ti --network&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;host --name CheckUserService users:check&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Now test it by&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ curl -d '{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;check&quot;,&quot;id&quot;:3}' http://127.0.0.1:5000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;curl -d &lt;span class=&quot;s1&quot;&gt;'{&quot;role&quot;:&quot;users&quot;,&quot;cmd&quot;:&quot;check&quot;,&quot;id&quot;:3}'&lt;/span&gt; http://127.0.0.1:5000/act&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;You should get the answer.&lt;/p&gt;
 
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Seneca plus Docker is a winning pair. They’re both light and powerful. I only scratched the surface of this vast subject whether about Docker or Seneca.
+I was pretty impressed by the quantity of plugins for Seneca. It seems to be a rational and viable choice that I discovered only lately.
+But microservices embrace a lot more domains I didn’t address here. To name a few : security, load balancing, transaction, etc.
+I hope it gave you a taste of microservices and a first (naïve) architecture to illustrate the possibility offered. Your way is only beginning here.
+The story is not over …&lt;/p&gt;
+
+&lt;h1 id=&quot;reference&quot;&gt;Reference&lt;/h1&gt;
+
+&lt;p&gt;A few references obviously or not useful.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://senecajs.org/&quot;&gt;Seneca&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://senecajs.org/getting-started/&quot;&gt;Getting started&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://senecajs.org/plugins/&quot;&gt;Plugins list&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.nearform.com/seneca/&quot;&gt;Nearform&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Sun, 20 Nov 2016 00:00:00 +0100</pubDate>
         <link>http://localhost:4000/posts/seneca-docker</link>

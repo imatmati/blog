@@ -30,12 +30,12 @@ I took this presentation literally from their site, it's a perfect fit. Maybe I'
 Now, how would I code my first and simple microservice ?
 First, install Node.js if necessary and create your project in a directory of your choice by :
 
-{% highlight command %}
+{% highlight shell %}
 $ npm init
 {% endhighlight %}
 
 Then install Seneca by :
-{% highlight command %}
+{% highlight shell %}
 $ npm install seneca --save
 {% endhighlight %}
 
@@ -99,7 +99,7 @@ Two ways are offered, you can use Seneca client or any HTTP client.
 
 ### HTTP client
 
-{% highlight text %}
+{% highlight shell %}
 $ curl -d '{"role":"users","cmd":"get","id":4}' http://127.0.0.1:5000/act
 {"user":[{"id":4,"first_name":"Anna","last_name":"Stephens","email":"astephens3@deviantart.com","gender":"Female","ip_address":"194.18.255.45"}]}
 {% endhighlight %}
@@ -110,7 +110,7 @@ Don't forget the act path in your URL, it's the marker of any client calls even 
 To demonstrate Seneca client, just execute the following codes respectively inside and outside index.js.
 
 * Inside the same file index.js
-{% highlight text %}
+{% highlight javascript %}
 seneca.act("role:users,cmd:get,id:4", function (err,response) {
 	if (err) return console.log (err.msg);
 	console.log (response);
@@ -118,7 +118,7 @@ seneca.act("role:users,cmd:get,id:4", function (err,response) {
 {% endhighlight %}
 
 * Outside in client.js we must specify the targeted service in the client call.
-{% highlight text %}
+{% highlight javascript %}
 var seneca = require ("seneca")();
 seneca.client({host:"127.0.0.1", port:5000}).act({"role":"users","cmd":"get","id":4}, function (err,response) {
 	if (err) return console.log (err.msg);
@@ -130,7 +130,7 @@ As seen above, you specify the pattern identifier of the service you want to cal
 An other way to write this part would be in JSON format.
 
 
-{% highlight text %}
+{% highlight javascript %}
 seneca.act({"role":"users","cmd":"get","id":4}, function (err,response) {
 	if (err) return console.log (err.msg);
 	console.log (response);
@@ -147,7 +147,7 @@ Seneca provides a plugin for service discovery called 'mesh'. And there shines t
 
 First, install the plugin in your project.
 
-{% highlight command %}
+{% highlight shell %}
 $ npm install seneca-balance-client
 $ npm install seneca-mesh
 {% endhighlight %}
@@ -156,7 +156,7 @@ Then our service discovery needs a node to be the entry point to join the networ
 
 I chose to implement a base within an actual service.Of course, you can decide to externalize a devoted instance for that matter.
 If necessary you can simply create a base with a single line of code
-{% highlight command %} 
+{% highlight shell %} 
 $ node -e 'require("seneca")().use("mesh",{isbase:true})'
 {% endhighlight %}
 
@@ -231,11 +231,11 @@ To make it callable, we listen on port 5000.
 
 Launch the two services with node and issue a call by
 
-{% highlight command %} 
+{% highlight shell %} 
 $ curl -d '{"role":"users","cmd":"check","id":3}' http://127.0.0.1:5000/act
 {% endhighlight %}
 The answer
-{% highlight command %} 
+{% highlight shell %} 
 {"user":{"id":3,"first_name":"Ralph","last_name":"Riley","email":"rriley2@cdbaby.com","gender":"Male","ip_address":"239.75.131.248","checked":true}}
 {% endhighlight %}
 
@@ -244,13 +244,13 @@ Of course the response will differ according to you generated test data.
 How do we know what services are exposed in a network ?
 Fairly simple, call this on any service of the network.
 
-{% highlight command %} 
+{% highlight shell %} 
 $ curl -d '{"role":"mesh","get":"members"}' http://127.0.0.1:6000/act
 {% endhighlight %}
 
 the answer contains all the services 
 
-{% highlight text %} 
+{% highlight shell %} 
 {"list":[
 {"pin":"role:users,cmd:get","port":6000,"host":"0.0.0.0","type":"web","instance":"99ni7imqrbn1/1479846054979/7136/3.2.2/-"},
 {"pin":"role:mesh,base:true","port":52631,"host":"0.0.0.0","type":"web","model":"actor","instance":"hm32xs56zucx/1479845435857/6642/3.2.2/-"},
@@ -277,7 +277,7 @@ I won't waste to present Docker. What I try here is to show you an introduction 
 The first service will serve as a base and be attributed to its own container.
 This is its Dockerfile.
 
-{% highlight text %} 
+{% highlight shell %} 
 FROM ubuntu:14.04
 MAINTAINER ivan matmati
 EXPOSE 39999
@@ -319,7 +319,7 @@ seneca.add("role:users,cmd:get", function(msg, respond) {
 
 My package.json is dedicated to seneca
 
-{% highlight text %}
+{% highlight json %}
 {
   "name": "ws1",
   "version": "1.0.0",
@@ -340,23 +340,23 @@ My package.json is dedicated to seneca
 
 Let's build it. My project for this sole service resides in the directory ws1. So from its parent, I issue
 
-{% highlight text %}
+{% highlight shell %}
 $ docker build -t users:get ws1/
 {% endhighlight %}
 
 And then run it with 
-{% highlight text %}
+{% highlight shell %}
 $ docker run -ti --network=host --name GetUserService  users:get
 {% endhighlight %}
 
-Notice that I use the most direct network configuration, this is not a good example for production.
+Notice that I use the most direct network configuration, this is certainly not your choice for production.
 
 ### Check user
 
 The Dockerfile
 
 
-{% highlight text %}
+{% highlight shell %}
 FROM ubuntu:14.04
 MAINTAINER ivan matmati
 EXPOSE 5000
@@ -399,16 +399,31 @@ seneca.add("role:users,cmd:check", function (msg, respond) {
 Use the same package.json from above.
 Now, let's build it and run it. The ws2 directory is my working space for this service.
 
-{% highlight text %}
+{% highlight shell %}
 $ docker build -t users:check ws2/
 $ docker run -ti --network=host --name CheckUserService users:check
 {% endhighlight %}
 
 Now test it by 
-{% highlight text %}
+{% highlight shell %}
 $ curl -d '{"role":"users","cmd":"check","id":3}' http://127.0.0.1:5000/act
 {% endhighlight %}
 
 You should get the answer.
 
 # Conclusion
+
+Seneca plus Docker is a winning pair. They're both light and powerful. I only scratched the surface of this vast subject whether about Docker or Seneca.
+I was pretty impressed by the quantity of plugins for Seneca. It seems to be a rational and viable choice that I discovered only lately.
+But microservices embrace a lot more domains I didn't address here. To name a few : security, load balancing, transaction, etc.
+I hope it gave you a taste of microservices and a first (naïve) architecture to illustrate the possibility offered. Your way is only beginning here.
+The story is not over ...
+
+# Reference
+
+A few references obviously or not useful.
+
+* [Seneca](http://senecajs.org/)
+* [Getting started](http://senecajs.org/getting-started/)
+* [Plugins list](http://senecajs.org/plugins/)
+* [Nearform](http://www.nearform.com/seneca/)
