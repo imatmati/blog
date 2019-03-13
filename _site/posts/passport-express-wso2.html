@@ -253,25 +253,25 @@ Do you remember our ‘me’ user and its ‘basic’ group ? Let’s find them 
 <p>You’ll have to install its SAML plugin as well.First create your application by installing dependencies. Here you get the package.json I used for the tutorial.</p>
 
 <figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="w">    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"express-saml"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"server.js"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"express-saml"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"server.js"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1"</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"keywords"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"keywords"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
         </span><span class="s2">"express"</span><span class="p">,</span><span class="w">
         </span><span class="s2">"saml"</span><span class="w">
       </span><span class="p">],</span><span class="w">
-      </span><span class="nt">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ivan matmati"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ISC"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"body-parser"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.15.1"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"express"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^4.13.4"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"express-session"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.13.0"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"passport"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.3.2"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"passport-saml"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.15.0"</span><span class="w">
+      </span><span class="s2">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ivan matmati"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ISC"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"body-parser"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.15.1"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"express"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^4.13.4"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"express-session"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.13.0"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"passport"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.3.2"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"passport-saml"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.15.0"</span><span class="w">
       </span><span class="p">}</span><span class="w">
     </span><span class="p">}</span></code></pre></figure>
 
@@ -317,7 +317,7 @@ As you can notice, a specific plugin has been added to Passport to take care of 
     <span class="nx">done</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">myUser</span><span class="p">);</span>
   <span class="p">}));</span>
     
-<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/myapp/login'</span><span class="p">,</span>
+<span class="nx">app</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'/myapp/login'</span><span class="p">,</span>
   <span class="nx">passport</span><span class="p">.</span><span class="nx">authenticate</span><span class="p">(</span><span class="s1">'saml'</span><span class="p">,</span> <span class="p">{</span>
     <span class="na">successRedirect</span><span class="p">:</span> <span class="s2">"/myapp"</span><span class="p">,</span>
     <span class="na">failureRedirect</span><span class="p">:</span> <span class="s2">"/myapp/login"</span><span class="p">,</span>
@@ -335,7 +335,7 @@ As you can notice, a specific plugin has been added to Passport to take care of 
 <span class="p">);</span>
     
     
-<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/myapp"</span><span class="p">,</span><span class="nx">redirectLogin</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">app</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s2">"/myapp"</span><span class="p">,</span><span class="nx">redirectLogin</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
    
     <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">"you're authenticated !!!! "</span><span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">user</span><span class="p">));</span>
 <span class="p">});</span>
@@ -370,7 +370,7 @@ First, we need to create a session in express so that authenticated users can be
 <p><br />
 Yes, it’s Base 64 encoded, so decode it and you’ll get something like :</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;saml2p:Response</span> <span class="na">Destination=</span><span class="s">"http://localhost:8080/myapp/saml"</span> <span class="na">ID=</span><span class="s">"ifchodcgbdkmefoghbhhaklkkmhhdleiageeghdf"</span> <span class="na">InResponseTo=</span><span class="s">"_d03f8780672f321acdd2"</span> <span class="na">IssueInstant=</span><span class="s">"2016-05-14T14:34:46.606Z"</span> <span class="na">Version=</span><span class="s">"2.0"</span> <span class="na">xmlns:saml2p=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:protocol"</span><span class="nt">&gt;</span>
 <span class="nt">&lt;saml2:Issuer</span> <span class="na">Format=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:nameid-format:entity"</span> <span class="na">xmlns:saml2=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:assertion"</span><span class="nt">&gt;</span>localhost<span class="nt">&lt;/saml2:Issuer&gt;</span>
 <span class="nt">&lt;saml2p:Status&gt;&lt;saml2p:StatusCode</span> <span class="na">Value=</span><span class="s">"urn:oasis:names:tc:SAML:2.0:status:Success"</span><span class="nt">/&gt;&lt;/saml2p:Status&gt;</span>
@@ -404,8 +404,7 @@ Yes, it’s Base 64 encoded, so decode it and you’ll get something like :</p>
 <span class="nt">&lt;/saml2:AuthnStatement&gt;</span>
 <span class="nt">&lt;/saml2:Assertion&gt;</span>
 <span class="nt">&lt;/saml2p:Response&gt;</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
 <div class="post-footer">
@@ -442,7 +441,7 @@ Yes, it’s Base 64 encoded, so decode it and you’ll get something like :</p>
           <footer>
 <hr/>
   <div class="left">  
-    &copy;2016.
+    &copy;2019.
     Built with <a href="http://jekyllrb.com/">Jekyll</a> and
     <a href="https://github.com/railsr/autm-rb">Autm-rb</a>
   </div>

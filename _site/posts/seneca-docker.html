@@ -105,11 +105,11 @@ It helps you write clean, organized code that you can scale and deploy at any ti
 <p>Now, how would I code my first and simple microservice ?
 First, install Node.js if necessary and create your project in a directory of your choice by :</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>npm init</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>npm init</code></pre></figure>
 
 <p>Then install Seneca by :</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>npm install seneca --save</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>npm <span class="nb">install </span>seneca <span class="nt">--save</span></code></pre></figure>
 
 <p>To test our first service, get some fake users from <a href="https://www.mockaroo.com/">https://www.mockaroo.com/</a> and save them in json format in your project directory.</p>
 
@@ -164,7 +164,7 @@ Two ways are offered, you can use Seneca client or any HTTP client.</p>
 
 <h3 id="http-client">HTTP client</h3>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>curl -d <span class="s1">'{"role":"users","cmd":"get","id":4}'</span> http://127.0.0.1:5000/act
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'{"role":"users","cmd":"get","id":4}'</span> http://127.0.0.1:5000/act
 <span class="o">{</span><span class="s2">"user"</span>:[<span class="o">{</span><span class="s2">"id"</span>:4,<span class="s2">"first_name"</span>:<span class="s2">"Anna"</span>,<span class="s2">"last_name"</span>:<span class="s2">"Stephens"</span>,<span class="s2">"email"</span>:<span class="s2">"astephens3@deviantart.com"</span>,<span class="s2">"gender"</span>:<span class="s2">"Female"</span>,<span class="s2">"ip_address"</span>:<span class="s2">"194.18.255.45"</span><span class="o">}]}</span></code></pre></figure>
 
 <p>Don’t forget the act path in your URL, it’s the marker of any client calls even from Seneca ones.</p>
@@ -207,8 +207,8 @@ An other way to write this part would be in JSON format.</p>
 
 <p>First, install the plugin in your project.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>npm install seneca-balance-client
-<span class="gp">$ </span>npm install seneca-mesh</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>npm <span class="nb">install </span>seneca-balance-client
+<span class="nv">$ </span>npm <span class="nb">install </span>seneca-mesh</code></pre></figure>
 
 <p>Then our service discovery needs a node to be the entry point to join the network, it’s called the base. Notice that it will be used only once by a client joining the network. In any subsequent need for information about service location any node can answer the request. That means that if the base goes down, our cluster will still work with its actual members !</p>
 
@@ -216,7 +216,7 @@ An other way to write this part would be in JSON format.</p>
 If necessary you can simply create a base with a single line of code</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"> 
-<span class="gp">$ </span>node -e <span class="s1">'require("seneca")().use("mesh",{isbase:true})'</span></code></pre></figure>
+<span class="nv">$ </span>node <span class="nt">-e</span> <span class="s1">'require("seneca")().use("mesh",{isbase:true})'</span></code></pre></figure>
 
 <p>This is the code for the intermixed variation.</p>
 
@@ -286,7 +286,7 @@ To make it callable, we listen on port 5000.</p>
 <p>Launch the two services with node and issue a call by</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"> 
-<span class="gp">$ </span>curl -d <span class="s1">'{"role":"users","cmd":"check","id":3}'</span> http://127.0.0.1:5000/act</code></pre></figure>
+<span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'{"role":"users","cmd":"check","id":3}'</span> http://127.0.0.1:5000/act</code></pre></figure>
 
 <p>The answer</p>
 
@@ -299,7 +299,7 @@ To make it callable, we listen on port 5000.</p>
 Fairly simple, call this on any service of the network.</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"> 
-<span class="gp">$ </span>curl -d <span class="s1">'{"role":"mesh","get":"members"}'</span> http://127.0.0.1:6000/act</code></pre></figure>
+<span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'{"role":"mesh","get":"members"}'</span> http://127.0.0.1:6000/act</code></pre></figure>
 
 <p>the answer contains all the services</p>
 
@@ -337,13 +337,13 @@ ENV PATH /opt/node/bin:<span class="nv">$PATH</span>
 ADD node /opt/node
 WORKDIR /logi/getuserservice
 RUN apt-get update
-RUN apt-get -y install python
-RUN apt-get -y install gcc
-RUN apt-get -y install make
-RUN apt-get -y install g++
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>python
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>gcc
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>make
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>g++
 ADD package.json index.js MOCK_DATA.json ./
-RUN /opt/node/bin/npm install
-CMD /opt/node/bin/node index.js </code></pre></figure>
+RUN /opt/node/bin/npm <span class="nb">install
+</span>CMD /opt/node/bin/node index.js </code></pre></figure>
 
 <p>I choose ubuntu 14.04 only because it’s my current system. For the base to be able to communicate with exterior, I expose the default port 39999.
 To use the latest version of node, I had to provide it myself as a directory in the project directory and copy it into /opt/node. I also created a special directory for my service /logi/getuserservice and copy all necessary artefacts : package.json index.js and MOCK_DATA.json</p>
@@ -371,29 +371,29 @@ To use the latest version of node, I had to provide it myself as a directory in 
 <p>My package.json is dedicated to seneca</p>
 
 <figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ws1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"index.js"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><span class="w">
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ws1"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"index.js"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1"</span><span class="w">
   </span><span class="p">},</span><span class="w">
-  </span><span class="nt">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ISC"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"seneca"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^3.2.2"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"seneca-balance-client"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.6.0"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"seneca-mesh"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.9.0"</span><span class="w">
+  </span><span class="s2">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ISC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"seneca"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^3.2.2"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"seneca-balance-client"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.6.0"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"seneca-mesh"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.9.0"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span></code></pre></figure>
 
 <p>Let’s build it. My project for this sole service resides in the directory ws1. So from its parent, I issue</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>docker build -t users:get ws1/</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker build <span class="nt">-t</span> <span class="nb">users</span>:get ws1/</code></pre></figure>
 
 <p>And then run it with</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>docker run -ti --network<span class="o">=</span>host --name GetUserService  users:get</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker run <span class="nt">-ti</span> <span class="nt">--network</span><span class="o">=</span>host <span class="nt">--name</span> GetUserService  <span class="nb">users</span>:get</code></pre></figure>
 
 <p>Notice that I use the most direct network configuration, this is certainly not your choice for production.</p>
 
@@ -408,13 +408,13 @@ ENV PATH /opt/node/bin:<span class="nv">$PATH</span>
 ADD node /opt/node
 WORKDIR /logi/checkuserservice
 RUN apt-get update
-RUN apt-get -y install python
-RUN apt-get -y install gcc
-RUN apt-get -y install make
-RUN apt-get -y install g++
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>python
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>gcc
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>make
+RUN apt-get <span class="nt">-y</span> <span class="nb">install </span>g++
 ADD package.json index.js ./
-RUN /opt/node/bin/npm install
-CMD /opt/node/bin/node index.js</code></pre></figure>
+RUN /opt/node/bin/npm <span class="nb">install
+</span>CMD /opt/node/bin/node index.js</code></pre></figure>
 
 <p>It’s almost the same. The only noticeable difference is that I expose the port 5000 to call directly my service.</p>
 
@@ -440,12 +440,12 @@ CMD /opt/node/bin/node index.js</code></pre></figure>
 <p>Use the same package.json from above.
 Now, let’s build it and run it. The ws2 directory is my working space for this service.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>docker build -t users:check ws2/
-<span class="gp">$ </span>docker run -ti --network<span class="o">=</span>host --name CheckUserService users:check</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker build <span class="nt">-t</span> <span class="nb">users</span>:check ws2/
+<span class="nv">$ </span>docker run <span class="nt">-ti</span> <span class="nt">--network</span><span class="o">=</span>host <span class="nt">--name</span> CheckUserService <span class="nb">users</span>:check</code></pre></figure>
 
 <p>Now test it by</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>curl -d <span class="s1">'{"role":"users","cmd":"check","id":3}'</span> http://127.0.0.1:5000/act</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>curl <span class="nt">-d</span> <span class="s1">'{"role":"users","cmd":"check","id":3}'</span> http://127.0.0.1:5000/act</code></pre></figure>
 
 <p>You should get the answer.</p>
 
@@ -501,7 +501,7 @@ The story is not over …</p>
           <footer>
 <hr/>
   <div class="left">  
-    &copy;2016.
+    &copy;2019.
     Built with <a href="http://jekyllrb.com/">Jekyll</a> and
     <a href="https://github.com/railsr/autm-rb">Autm-rb</a>
   </div>
